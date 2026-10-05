@@ -3,386 +3,312 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Player Auction — Vivek vs Garvit</title>
+<title>Player Auction — Dynamic</title>
 <style>
   :root{
-    --bg:#0a0e1a;
-    --card:#131a2e;
-    --card2:#1a2338;
-    --line:#26324d;
-    --text:#e8eefc;
-    --muted:#8b9ac0;
-    --vivek:#4f9dff;
-    --garvit:#ff8a4f;
-    --green:#22d3a6;
-    --red:#ff5c7a;
-    --gold:#ffd700;
-    --purple:#a78bfa;
+    --bg:#0a0e1a; --card:#131a2e; --card2:#1a2338; --line:#26324d;
+    --text:#e8eefc; --muted:#8b9ac0;
+    --green:#22d3a6; --red:#ff5c7a; --gold:#ffd700; --purple:#a78bfa; --amber:#f59e0b;
   }
-
   *{margin:0;padding:0;box-sizing:border-box}
-
   body{
     font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
-    background:#0a0e1a;
-    color:var(--text);
-    min-height:100vh;
-    padding:20px;
-    overflow-x:hidden;
-    position:relative;
+    background:#0a0e1a;color:var(--text);min-height:100vh;padding:20px;
+    overflow-x:hidden;position:relative;
   }
-
   body::before{
-    content:'';
-    position:fixed;inset:0;
+    content:'';position:fixed;inset:0;
     background:
       radial-gradient(circle at 15% 20%, rgba(79,157,255,.12), transparent 40%),
       radial-gradient(circle at 85% 75%, rgba(255,138,79,.12), transparent 40%),
       radial-gradient(circle at 50% 50%, rgba(167,139,250,.08), transparent 50%);
-    pointer-events:none;
-    z-index:0;
-    animation:bgShift 20s ease-in-out infinite;
+    pointer-events:none;z-index:0;animation:bgShift 20s ease-in-out infinite;
   }
-  @keyframes bgShift{
-    0%,100%{opacity:.6;transform:scale(1)}
-    50%{opacity:1;transform:scale(1.15)}
-  }
-
+  @keyframes bgShift{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
   .app{max-width:1280px;margin:0 auto;position:relative;z-index:1}
 
-  header{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:14px;gap:12px;flex-wrap:wrap;
-  }
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
   header h1{
     font-size:26px;letter-spacing:.5px;
-    background:linear-gradient(90deg,var(--vivek),var(--purple),var(--garvit));
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-size:200% auto;
-    animation:shine 4s linear infinite;
+    background:linear-gradient(90deg,#4f9dff,var(--purple),#ff8a4f);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    background-size:200% auto;animation:shine 4s linear infinite;
   }
   @keyframes shine{to{background-position:200% center}}
-
   .stats-bar{display:flex;gap:10px;flex-wrap:wrap}
   .stat-chip{
     background:var(--card);border:1px solid var(--line);
     padding:8px 14px;border-radius:20px;font-size:13px;
-    display:flex;align-items:center;gap:6px;
-    transition:.2s;
+    display:flex;align-items:center;gap:6px;transition:.2s;
   }
   .stat-chip:hover{border-color:var(--green);transform:translateY(-2px)}
   .stat-chip b{color:var(--green)}
+  .stat-chip.round-chip{background:linear-gradient(135deg, rgba(167,139,250,.15), rgba(79,157,255,.1));border-color:var(--purple)}
+  .stat-chip.round-chip b{color:var(--purple)}
+  .stat-chip.unsold-chip{background:linear-gradient(135deg, rgba(245,158,11,.12), rgba(217,119,6,.06));border-color:var(--amber)}
+  .stat-chip.unsold-chip b{color:var(--amber)}
 
+  /* Setup Panel */
   .setup-panel{
     background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:14px 18px;
-    margin-bottom:18px;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
-    position:relative;
-    overflow:hidden;
+    border:1px solid var(--line);border-radius:16px;
+    padding:14px 18px;margin-bottom:18px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:relative;overflow:hidden;
   }
   .setup-panel::before{
     content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,var(--vivek),var(--purple),var(--garvit));
+    background:linear-gradient(90deg,#4f9dff,var(--purple),#ff8a4f);
   }
-  .setup-label{
-    font-size:13px;color:var(--muted);
-    font-weight:700;text-transform:uppercase;
-    letter-spacing:1px;display:flex;align-items:center;gap:8px;
-  }
-  .setup-label .icon{font-size:16px}
+  .setup-label{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px}
   .setup-group{
-    display:flex;align-items:center;gap:8px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:6px 12px;
-    transition:.2s;
+    display:flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:10px;padding:6px 8px 6px 12px;transition:.2s;
+    border-left:3px solid var(--owner-color, #4f9dff);
   }
   .setup-group:focus-within{border-color:var(--green)}
-  .setup-group.vivek:focus-within{border-color:var(--vivek)}
-  .setup-group.garvit:focus-within{border-color:var(--garvit)}
-  .setup-group .name{
-    font-size:13px;font-weight:700;min-width:52px;
+  .setup-group input.name-input{
+    width:80px;background:transparent;border:none;outline:none;
+    color:var(--owner-color,#4f9dff);font-size:13px;font-weight:800;
+    padding:0;
   }
-  .setup-group.vivek .name{color:var(--vivek)}
-  .setup-group.garvit .name{color:var(--garvit)}
-  .setup-group input{
-    width:90px;background:transparent;border:none;outline:none;
+  .setup-group input.tokens-input{
+    width:70px;background:transparent;border:none;outline:none;
     color:var(--text);font-size:15px;font-weight:800;
-    font-variant-numeric:tabular-nums;
-    text-align:right;
+    font-variant-numeric:tabular-nums;text-align:right;padding:0;
   }
   .setup-group input::-webkit-outer-spin-button,
   .setup-group input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .setup-group input[type=number]{-moz-appearance:textfield}
   .setup-group .coin{font-size:13px;color:var(--muted)}
+  .setup-group .remove-owner-x{
+    width:20px;height:20px;border-radius:50%;
+    background:rgba(255,92,122,.15);color:var(--red);
+    border:none;cursor:pointer;font-size:11px;font-weight:900;
+    display:grid;place-items:center;transition:.2s;
+    margin-left:4px;flex-shrink:0;
+  }
+  .setup-group .remove-owner-x:hover{background:var(--red);color:#fff;transform:scale(1.15)}
+  .setup-group .remove-owner-x:disabled{opacity:.25;cursor:not-allowed}
+
+  .add-owner-btn{
+    background:linear-gradient(135deg,#22d3a6,#1eb98e);color:#06101f;border:none;
+    padding:10px 16px;border-radius:10px;font-size:12px;font-weight:800;
+    cursor:pointer;transition:.2s;letter-spacing:.3px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .add-owner-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(34,211,166,.4)}
+  .add-owner-btn:disabled{opacity:.35;cursor:not-allowed}
 
   .apply-btn{
-    background:linear-gradient(135deg,#7c3aed,#4f9dff);
-    color:#fff;border:none;
-    padding:10px 22px;border-radius:10px;
-    font-size:13px;font-weight:800;
-    cursor:pointer;transition:.2s;
-    letter-spacing:.3px;
-    box-shadow:0 4px 14px rgba(79,157,255,.3);
-    margin-left:auto;
+    background:linear-gradient(135deg,#7c3aed,#4f9dff);color:#fff;border:none;
+    padding:10px 22px;border-radius:10px;font-size:13px;font-weight:800;
+    cursor:pointer;transition:.2s;letter-spacing:.3px;
+    box-shadow:0 4px 14px rgba(79,157,255,.3);margin-left:auto;
   }
   .apply-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(79,157,255,.5);filter:brightness(1.08)}
-  .apply-btn:active{transform:translateY(0) scale(.98)}
-
-  .setup-hint{
-    font-size:11px;color:var(--muted);width:100%;
-    padding-top:4px;border-top:1px dashed rgba(255,255,255,.06);
-    margin-top:4px;
-  }
+  .setup-hint{font-size:11px;color:var(--muted);width:100%;padding-top:4px;border-top:1px dashed rgba(255,255,255,.06);margin-top:4px}
   .setup-hint b{color:var(--gold)}
 
-  .grid{
-    display:grid;
-    grid-template-columns:250px 1fr 300px;
-    gap:18px;
-    margin-bottom:20px;
-  }
+  .grid{display:grid;grid-template-columns:250px 1fr 300px;gap:18px;margin-bottom:20px}
 
+  /* Owners */
   .owners-panel{display:flex;flex-direction:column;gap:14px}
-
   .owner-card{
     background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:16px;
-    transition:.3s;
-    position:relative;
-    overflow:hidden;
+    border:1px solid var(--line);border-radius:18px;
+    padding:16px;transition:.3s;position:relative;overflow:hidden;
   }
   .owner-card::before{
     content:'';position:absolute;top:0;left:0;right:0;height:3px;
-    background:var(--vivek);transition:.3s;
+    background:var(--owner-color, #4f9dff);transition:.3s;
   }
-  #owner-garvit::before{background:var(--garvit)}
-
   .owner-card.winning{
     border-color:var(--green);
     box-shadow:0 0 25px rgba(34,211,166,.35);
     transform:scale(1.02);
   }
   .owner-card.winning::before{background:var(--green)}
-
+  .owner-card.passed{border-color:var(--amber);opacity:.75}
+  .owner-card.passed::before{background:var(--amber)}
+  .owner-card.passed::after{
+    content:'PASSED';position:absolute;top:12px;right:44px;
+    background:var(--amber);color:#06101f;font-size:9px;font-weight:900;
+    padding:3px 8px;border-radius:6px;letter-spacing:1px;
+  }
   .owner-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .owner-avatar{
     width:44px;height:44px;border-radius:50%;
     display:grid;place-items:center;font-weight:800;font-size:17px;
-    color:#06101f;
-    box-shadow:0 4px 12px rgba(0,0,0,.3);
-    flex-shrink:0;
+    color:#06101f;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0;
   }
-  .owner-avatar.vivek{background:linear-gradient(135deg,#4f9dff,#7bb8ff)}
-  .owner-avatar.garvit{background:linear-gradient(135deg,#ff8a4f,#ffb37a)}
-
   .owner-info{flex:1;min-width:0}
-  .owner-name{font-weight:800;font-size:16px}
+  .owner-name{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .owner-tokens-sm{font-size:12px;color:var(--muted)}
+  .owner-remove-btn{
+    position:absolute;top:10px;right:10px;
+    width:24px;height:24px;border-radius:50%;
+    background:rgba(255,92,122,.15);color:var(--red);
+    border:none;cursor:pointer;font-size:14px;font-weight:900;
+    display:grid;place-items:center;transition:.2s;
+    z-index:2;
+  }
+  .owner-remove-btn:hover{background:var(--red);color:#fff;transform:scale(1.15)}
+  .owner-remove-btn:disabled{opacity:.25;cursor:not-allowed}
 
   .token-display{
-    text-align:center;
-    background:rgba(34,211,166,.08);
-    border:1px solid rgba(34,211,166,.25);
-    border-radius:12px;
-    padding:10px;
-    margin-bottom:12px;
+    text-align:center;background:rgba(34,211,166,.08);
+    border:1px solid rgba(34,211,166,.25);border-radius:12px;
+    padding:10px;margin-bottom:12px;
   }
-  .token-display .num{
-    font-size:26px;font-weight:800;color:var(--green);
-    font-variant-numeric:tabular-nums;
-    transition:.3s;
-  }
+  .token-display .num{font-size:26px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;transition:.3s}
   .token-display .num.pulse{animation:numPulse .5s}
-  @keyframes numPulse{
-    0%{transform:scale(1)}
-    50%{transform:scale(1.25);color:var(--gold)}
-    100%{transform:scale(1)}
-  }
+  @keyframes numPulse{0%{transform:scale(1)}50%{transform:scale(1.25);color:var(--gold)}100%{transform:scale(1)}}
   .token-display .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-
-  .budget-bar{
-    height:6px;background:rgba(255,255,255,.06);
-    border-radius:10px;overflow:hidden;margin-bottom:12px;
-  }
-  .budget-fill{
-    height:100%;border-radius:10px;transition:.6s cubic-bezier(.4,0,.2,1);
-    background:linear-gradient(90deg,var(--green),#5eead4);
-  }
+  .budget-bar{height:6px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden;margin-bottom:12px}
+  .budget-fill{height:100%;border-radius:10px;transition:.6s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--green),#5eead4)}
   .budget-fill.med{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
   .budget-fill.low{background:linear-gradient(90deg,#ff5c7a,#dc2626)}
-
   .owner-team{display:flex;flex-direction:column;gap:5px}
   .team-chip{
     display:flex;align-items:center;gap:8px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:6px 10px;
-    font-size:13px;
-    animation:chipIn .4s ease;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;font-size:13px;animation:chipIn .4s ease;
   }
   @keyframes chipIn{from{opacity:0;transform:translateX(-8px)}}
   .team-chip .mini-av{
-    width:22px;height:22px;border-radius:50%;
-    display:grid;place-items:center;font-size:10px;font-weight:800;
-    background:rgba(255,255,255,.1);color:var(--text);flex-shrink:0;
+    width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+    font-size:10px;font-weight:800;background:rgba(255,255,255,.1);color:var(--text);flex-shrink:0;
   }
-  .team-chip .price{
-    margin-left:auto;font-size:11px;color:var(--muted);
-    font-weight:700;
-  }
-  .team-empty{
-    text-align:center;color:var(--muted);
-    font-size:12px;padding:8px;font-style:italic;
-  }
+  .team-chip .price{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700}
+  .team-empty{text-align:center;color:var(--muted);font-size:12px;padding:8px;font-style:italic}
 
+  /* Arena */
   .auction-arena{
     background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:24px;
-    display:flex;flex-direction:column;justify-content:center;
-    min-height:460px;
-    position:relative;
-    overflow:hidden;
+    border:1px solid var(--line);border-radius:20px;
+    padding:24px;display:flex;flex-direction:column;justify-content:center;
+    min-height:460px;position:relative;overflow:hidden;
   }
   .auction-arena::after{
     content:'';position:absolute;inset:0;
     background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.04), transparent 60%);
     pointer-events:none;
   }
-
-  .no-player{
-    text-align:center;color:var(--muted);font-size:15px;
-    position:relative;z-index:2;
-  }
-  .dice-icon{
-    font-size:56px;margin-bottom:14px;
-    animation:float 3s ease-in-out infinite;
-    display:inline-block;
-  }
+  .no-player{text-align:center;color:var(--muted);font-size:15px;position:relative;z-index:2}
+  .dice-icon{font-size:56px;margin-bottom:14px;animation:float 3s ease-in-out infinite;display:inline-block}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-
   .random-pick-btn{
-    background:linear-gradient(135deg,#7c3aed,#4f9dff);
-    color:#fff;border:none;
-    padding:16px 34px;border-radius:14px;
-    font-size:16px;font-weight:800;
-    cursor:pointer;transition:.25s;
-    display:inline-block;margin-top:16px;
-    box-shadow:0 8px 24px rgba(79,157,255,.35);
-    letter-spacing:.5px;
+    background:linear-gradient(135deg,#7c3aed,#4f9dff);color:#fff;border:none;
+    padding:16px 34px;border-radius:14px;font-size:16px;font-weight:800;
+    cursor:pointer;transition:.25s;display:inline-block;margin-top:16px;
+    box-shadow:0 8px 24px rgba(79,157,255,.35);letter-spacing:.5px;
   }
-  .random-pick-btn:hover:not(:disabled){
-    transform:translateY(-3px) scale(1.03);
-    box-shadow:0 14px 32px rgba(79,157,255,.55);
-  }
+  .random-pick-btn:hover:not(:disabled){transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px rgba(79,157,255,.55)}
   .random-pick-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+
+  .round-complete-view{text-align:center;position:relative;z-index:2;animation:roundIn .5s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes roundIn{from{opacity:0;transform:scale(.85)}}
+  .round-complete-badge{
+    display:inline-block;
+    background:linear-gradient(135deg, rgba(34,211,166,.2), rgba(34,211,166,.05));
+    border:1px solid var(--green);color:var(--green);
+    font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;
+    letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;
+  }
+  .round-complete-icon{font-size:60px;margin-bottom:10px;animation:roundIconSpin 2s ease-in-out infinite}
+  @keyframes roundIconSpin{0%,100%{transform:rotate(0deg) scale(1)}25%{transform:rotate(-10deg) scale(1.05)}75%{transform:rotate(10deg) scale(1.05)}}
+  .round-complete-title{
+    font-size:24px;font-weight:900;margin-bottom:8px;
+    background:linear-gradient(90deg,var(--gold),#f59e0b);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    background-size:200% auto;animation:shine 3s linear infinite;
+  }
+  .round-complete-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+  .round-complete-sub b{color:var(--amber);font-weight:800}
+  .unsold-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto}
+  .unsold-chip-sm{
+    background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);
+    color:var(--amber);padding:5px 12px;border-radius:20px;
+    font-size:12px;font-weight:700;animation:chipIn .4s ease;
+  }
+  .next-round-btn{
+    background:linear-gradient(135deg,#22d3a6,#1eb98e);color:#06101f;border:none;
+    padding:16px 40px;border-radius:14px;font-size:16px;font-weight:900;
+    cursor:pointer;transition:.25s;letter-spacing:.5px;
+    box-shadow:0 8px 24px rgba(34,211,166,.4);
+    display:inline-flex;align-items:center;gap:8px;
+    animation:nextRoundPulse 1.8s ease-in-out infinite;
+  }
+  .next-round-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px rgba(34,211,166,.6)}
+  @keyframes nextRoundPulse{
+    0%,100%{box-shadow:0 8px 24px rgba(34,211,166,.4)}
+    50%{box-shadow:0 8px 36px rgba(34,211,166,.75)}
+  }
+  .finalize-btn{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    padding:10px 24px;border-radius:12px;font-size:13px;font-weight:700;
+    cursor:pointer;transition:.2s;margin-top:14px;display:inline-block;
+  }
+  .finalize-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+  .round-indicator{
+    position:absolute;top:14px;left:14px;z-index:3;
+    background:linear-gradient(135deg, rgba(167,139,250,.2), rgba(79,157,255,.12));
+    border:1px solid var(--purple);color:var(--purple);
+    font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;
+    letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;
+  }
+  .round-indicator .dot{width:6px;height:6px;border-radius:50%;background:var(--purple);animation:dotPulse 1.5s ease-in-out infinite}
+  @keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
   .player-showcase{position:relative;z-index:2;text-align:center;margin-bottom:14px}
   .player-avatar-lg{
-    width:80px;height:80px;border-radius:50%;
-    display:grid;place-items:center;
-    font-size:28px;font-weight:900;
-    margin:0 auto 10px;
-    background:linear-gradient(135deg,var(--purple),var(--vivek));
-    color:#fff;
+    width:80px;height:80px;border-radius:50%;display:grid;place-items:center;
+    font-size:28px;font-weight:900;margin:0 auto 10px;
+    background:linear-gradient(135deg,var(--purple),#4f9dff);color:#fff;
     box-shadow:0 8px 28px rgba(167,139,250,.4);
-    border:3px solid rgba(255,255,255,.15);
-    animation:avIn .5s ease;
+    border:3px solid rgba(255,255,255,.15);animation:avIn .5s ease;
   }
   @keyframes avIn{from{transform:scale(.5) rotate(-15deg);opacity:0}}
-  .player-avatar-lg.premium{
-    background:linear-gradient(135deg,#ffd700,#f59e0b);
-    box-shadow:0 8px 28px rgba(255,215,0,.45);
-  }
-  .player-avatar-lg.regular{
-    background:linear-gradient(135deg,#4f9dff,#7bb8ff);
-    box-shadow:0 8px 28px rgba(79,157,255,.4);
-  }
-  .player-showcase h2{
-    font-size:26px;margin-bottom:6px;
-    animation:fadeUp .4s ease;
-  }
+  .player-avatar-lg.premium{background:linear-gradient(135deg,#ffd700,#f59e0b);box-shadow:0 8px 28px rgba(255,215,0,.45)}
+  .player-avatar-lg.regular{background:linear-gradient(135deg,#4f9dff,#7bb8ff);box-shadow:0 8px 28px rgba(79,157,255,.4)}
+  .player-showcase h2{font-size:26px;margin-bottom:6px;animation:fadeUp .4s ease}
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}}
-  .badge{
-    font-size:11px;padding:3px 12px;border-radius:20px;
-    font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  }
+  .badge{font-size:11px;padding:3px 12px;border-radius:20px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
   .badge.premium{background:rgba(255,215,0,.18);color:var(--gold)}
-  .badge.regular{background:rgba(79,157,255,.18);color:var(--vivek)}
+  .badge.regular{background:rgba(79,157,255,.18);color:#4f9dff}
   .base-line{color:var(--muted);font-size:13px;margin-top:8px}
 
-  /* ===== BID TIMER ===== */
   .bid-timer{
-    display:none;
-    text-align:center;
-    margin-bottom:12px;
-    padding:10px;
+    display:none;text-align:center;margin-bottom:12px;padding:10px;
     background:linear-gradient(180deg, rgba(255,92,122,.08), rgba(255,92,122,.02));
-    border:1px solid rgba(255,92,122,.25);
-    border-radius:14px;
-    animation:timerIn .3s ease;
-    position:relative;
-    overflow:hidden;
+    border:1px solid rgba(255,92,122,.25);border-radius:14px;
+    animation:timerIn .3s ease;position:relative;overflow:hidden;
   }
   @keyframes timerIn{from{opacity:0;transform:translateY(-8px)}}
   .bid-timer.show{display:block}
-  .bid-timer .timer-label{
-    font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
-    color:var(--muted);font-weight:700;
-    margin-bottom:4px;
-  }
+  .bid-timer .timer-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
   .bid-timer .timer-count{
-    font-size:36px;font-weight:900;
-    color:var(--red);
-    font-variant-numeric:tabular-nums;
-    line-height:1;
-    text-shadow:0 0 20px rgba(255,92,122,.5);
-    transition:.2s;
+    font-size:36px;font-weight:900;color:var(--red);
+    font-variant-numeric:tabular-nums;line-height:1;
+    text-shadow:0 0 20px rgba(255,92,122,.5);transition:.2s;
   }
-  .bid-timer .timer-count.danger{
-    color:#ff2e57;
-    animation:timerPulse .5s infinite;
-  }
-  @keyframes timerPulse{
-    0%,100%{transform:scale(1)}
-    50%{transform:scale(1.15)}
-  }
-  .bid-timer .timer-sub{
-    font-size:11px;color:var(--muted);margin-top:6px;
-  }
-  .bid-timer .timer-sub b{
-    color:var(--gold);
-    text-transform:capitalize;
-  }
+  .bid-timer .timer-count.danger{color:#ff2e57;animation:timerPulse .5s infinite}
+  @keyframes timerPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+  .bid-timer .timer-sub{font-size:11px;color:var(--muted);margin-top:6px}
+  .bid-timer .timer-sub b{color:var(--gold);text-transform:capitalize}
   .timer-progress{
     position:absolute;bottom:0;left:0;height:3px;
     background:linear-gradient(90deg,var(--gold),var(--red));
-    transition:width 1s linear;
-    width:100%;
+    transition:width 1s linear;width:100%;
   }
 
   .current-bid-box{
-    text-align:center;
-    background:rgba(34,211,166,.07);
-    border:1px solid rgba(34,211,166,.28);
-    border-radius:16px;
-    padding:14px;margin-bottom:12px;
-    position:relative;
-    overflow:hidden;
-    transition:.3s;
+    text-align:center;background:rgba(34,211,166,.07);
+    border:1px solid rgba(34,211,166,.28);border-radius:16px;
+    padding:14px;margin-bottom:12px;position:relative;overflow:hidden;transition:.3s;
   }
   .current-bid-box.flash{animation:bidFlash .6s}
   @keyframes bidFlash{
@@ -390,171 +316,179 @@
     30%{background:rgba(34,211,166,.3);transform:scale(1.03)}
     100%{background:rgba(34,211,166,.07)}
   }
-  .current-bid-box.maxed{
-    border-color:var(--gold);
-    background:rgba(255,215,0,.1);
-    box-shadow:0 0 25px rgba(255,215,0,.3);
-  }
-  .current-bid-box .label{
-    font-size:11px;color:var(--muted);
-    text-transform:uppercase;letter-spacing:1.5px;
-  }
+  .current-bid-box.maxed{border-color:var(--gold);background:rgba(255,215,0,.1);box-shadow:0 0 25px rgba(255,215,0,.3)}
+  .current-bid-box .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
   .current-bid-box .amount{
-    font-size:38px;font-weight:900;
-    color:var(--green);margin:4px 0;
-    font-variant-numeric:tabular-nums;
-    text-shadow:0 0 30px rgba(34,211,166,.4);
-    transition:.3s;
+    font-size:38px;font-weight:900;color:var(--green);margin:4px 0;
+    font-variant-numeric:tabular-nums;text-shadow:0 0 30px rgba(34,211,166,.4);transition:.3s;
   }
   .current-bid-box.maxed .amount{color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,.5)}
-  .current-bid-box .leader{
-    font-size:13px;color:var(--muted);
-    font-weight:600;
-  }
+  .current-bid-box .leader{font-size:13px;color:var(--muted);font-weight:600}
   .current-bid-box .leader.highlight{color:var(--green)}
   .max-tag{
     display:inline-block;margin-top:6px;
-    background:linear-gradient(135deg,#ffd700,#f59e0b);
-    color:#06101f;font-size:10px;font-weight:800;
-    padding:3px 10px;border-radius:20px;
+    background:linear-gradient(135deg,#ffd700,#f59e0b);color:#06101f;
+    font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;
     letter-spacing:1px;text-transform:uppercase;
   }
 
-  .bid-buttons{
-    display:grid;grid-template-columns:1fr 1fr;
-    gap:12px;margin-bottom:12px;
-  }
+  .bid-buttons{display:grid;gap:10px;margin-bottom:10px}
   .btn{
     padding:14px;border:none;border-radius:12px;
     font-size:15px;font-weight:800;cursor:pointer;
-    transition:.2s;color:#06101f;
-    letter-spacing:.3px;
+    transition:.2s;color:#06101f;letter-spacing:.3px;
     position:relative;overflow:hidden;
   }
-  .btn.vivek{background:linear-gradient(135deg,#4f9dff,#7bb8ff);box-shadow:0 4px 14px rgba(79,157,255,.35)}
-  .btn.garvit{background:linear-gradient(135deg,#ff8a4f,#ffb37a);box-shadow:0 4px 14px rgba(255,138,79,.35)}
   .btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08)}
   .btn:active:not(:disabled){transform:translateY(0) scale(.98)}
   .btn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
-  /* Pulse highlight for the owner who needs to bid */
-  .btn.needs-bid{
-    animation:needsBid 1s ease-in-out infinite;
-  }
+  .btn.needs-bid{animation:needsBid 1s ease-in-out infinite}
   @keyframes needsBid{
-    0%,100%{transform:scale(1);box-shadow:0 4px 14px rgba(255,92,122,.35)}
-    50%{transform:scale(1.04);box-shadow:0 4px 25px rgba(255,92,122,.7)}
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.04)}
   }
 
-  .auction-actions{
-    display:grid;grid-template-columns:1.4fr 1fr;
-    gap:10px;
-  }
-  .btn-sold{
-    background:linear-gradient(135deg,#22d3a6,#1eb98e);
-    color:#06101f;border:none;
-    padding:12px;border-radius:12px;
-    font-size:14px;font-weight:800;cursor:pointer;
+  .pass-buttons{display:grid;gap:10px;margin-bottom:10px}
+  .btn-pass{
+    padding:10px;border:1.5px solid var(--line);border-radius:10px;
+    background:rgba(255,255,255,.03);color:var(--muted);
+    font-size:12px;font-weight:800;cursor:pointer;
     transition:.2s;letter-spacing:.5px;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .btn-pass:hover:not(:disabled){background:rgba(245,158,11,.12);border-color:var(--amber);color:var(--amber)}
+  .btn-pass:disabled{opacity:.35;cursor:not-allowed}
+  .btn-pass.passed{background:rgba(245,158,11,.15);border-color:var(--amber);color:var(--amber);cursor:not-allowed}
+
+  .auction-actions{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+  .btn-sold{
+    background:linear-gradient(135deg,#22d3a6,#1eb98e);color:#06101f;border:none;
+    padding:12px;border-radius:12px;font-size:14px;font-weight:800;
+    cursor:pointer;transition:.2s;letter-spacing:.5px;
     box-shadow:0 4px 14px rgba(34,211,166,.35);
   }
   .btn-sold:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(34,211,166,.5)}
   .btn-sold:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
   .btn-cancel{
-    background:transparent;border:1px solid var(--line);
-    color:var(--muted);padding:12px;border-radius:12px;
-    font-size:13px;font-weight:700;cursor:pointer;transition:.2s;
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    padding:12px;border-radius:12px;font-size:13px;font-weight:700;
+    cursor:pointer;transition:.2s;
   }
   .btn-cancel:hover{border-color:var(--red);color:var(--red);background:rgba(255,92,122,.08)}
 
+  /* Players list */
   .players-list{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:16px;
-    display:flex;flex-direction:column;
+    background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:16px;display:flex;flex-direction:column;
   }
-  .list-header{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:12px;
+  .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .list-header h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
+  .list-header-actions{display:flex;gap:6px}
+  .add-player-btn{
+    background:linear-gradient(135deg,#22d3a6,#1eb98e);
+    color:#06101f;border:none;
+    padding:6px 12px;border-radius:8px;
+    font-size:11px;font-weight:800;
+    cursor:pointer;transition:.2s;
+    letter-spacing:.3px;
+    display:flex;align-items:center;gap:4px;
   }
-  .list-header h3{
-    font-size:12px;color:var(--muted);
-    text-transform:uppercase;letter-spacing:1.5px;
+  .add-player-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(34,211,166,.4)}
+
+  .add-player-form{
+    display:none;flex-direction:column;gap:8px;
+    background:rgba(34,211,166,.05);
+    border:1px dashed rgba(34,211,166,.3);
+    border-radius:12px;padding:12px;
+    margin-bottom:12px;animation:formIn .3s ease;
   }
+  @keyframes formIn{from{opacity:0;transform:translateY(-8px)}}
+  .add-player-form.show{display:flex}
+  .add-player-form input,
+  .add-player-form select{
+    width:100%;padding:8px 10px;
+    background:#0e1424;border:1px solid var(--line);
+    border-radius:8px;color:var(--text);
+    font-size:13px;font-weight:600;outline:none;transition:.2s;
+    font-family:inherit;
+  }
+  .add-player-form input:focus,
+  .add-player-form select:focus{border-color:var(--green)}
+  .add-player-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .add-player-form .form-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+  .add-player-form .btn-save{
+    background:linear-gradient(135deg,#22d3a6,#1eb98e);
+    color:#06101f;border:none;padding:9px;border-radius:8px;
+    font-size:12px;font-weight:800;cursor:pointer;transition:.2s;
+  }
+  .add-player-form .btn-save:hover{filter:brightness(1.1)}
+  .add-player-form .btn-cancel-sm{
+    background:transparent;border:1px solid var(--line);
+    color:var(--muted);padding:9px;border-radius:8px;
+    font-size:12px;font-weight:700;cursor:pointer;transition:.2s;
+  }
+  .add-player-form .btn-cancel-sm:hover{border-color:var(--red);color:var(--red)}
+
   .list-tabs{display:flex;gap:6px;margin-bottom:12px}
   .tab-btn{
     flex:1;padding:7px;border-radius:8px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
     color:var(--muted);font-size:11px;font-weight:700;
-    cursor:pointer;transition:.2s;
-    text-transform:uppercase;letter-spacing:.5px;
+    cursor:pointer;transition:.2s;text-transform:uppercase;letter-spacing:.5px;
   }
   .tab-btn:hover{background:rgba(255,255,255,.07)}
-  .tab-btn.active{background:rgba(79,157,255,.15);color:var(--vivek);border-color:var(--vivek)}
+  .tab-btn.active{background:rgba(79,157,255,.15);color:#4f9dff;border-color:#4f9dff}
 
   .player-grid{
     display:flex;flex-direction:column;gap:7px;
-    overflow-y:auto;max-height:520px;
-    padding-right:4px;
+    overflow-y:auto;max-height:520px;padding-right:4px;
   }
   .player-grid::-webkit-scrollbar{width:5px}
   .player-grid::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
 
   .player-card{
     display:flex;align-items:center;gap:10px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:9px 11px;
-    cursor:pointer;transition:.2s;
-    position:relative;overflow:hidden;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:10px;padding:9px 11px;cursor:pointer;
+    transition:.2s;position:relative;overflow:hidden;
   }
-  .player-card.available:hover{
-    background:rgba(255,255,255,.07);
-    border-color:var(--green);
-    transform:translateX(3px);
+  .player-card.available{padding-right:36px}
+  .player-card.unsold{padding-right:36px}
+  .player-card.available:hover{background:rgba(255,255,255,.07);border-color:var(--green);transform:translateX(3px)}
+  .player-card.sold{opacity:.55;cursor:default;border-left:3px solid var(--green)}
+  .player-card.unsold{opacity:.9;cursor:pointer;border-left:3px solid var(--amber);background:rgba(245,158,11,.06)}
+  .player-card.unsold:hover{background:rgba(245,158,11,.12);border-color:var(--amber);transform:translateX(3px)}
+  .player-card.highlight{border-color:var(--gold);background:rgba(255,215,0,.1);box-shadow:0 0 18px rgba(255,215,0,.3);transform:scale(1.03)}
+
+  .remove-player-btn{
+    position:absolute;top:50%;right:8px;transform:translateY(-50%);
+    width:22px;height:22px;border-radius:50%;
+    background:rgba(255,92,122,.15);color:var(--red);
+    border:none;cursor:pointer;font-size:13px;font-weight:900;
+    display:grid;place-items:center;transition:.2s;
+    z-index:2;
   }
-  .player-card.sold{
-    opacity:.55;cursor:default;
-    border-left:3px solid var(--green);
-  }
-  .player-card.highlight{
-    border-color:var(--gold);
-    background:rgba(255,215,0,.1);
-    box-shadow:0 0 18px rgba(255,215,0,.3);
-    transform:scale(1.03);
-  }
+  .remove-player-btn:hover{background:var(--red);color:#fff;transform:translateY(-50%) scale(1.15)}
+
   .pc-avatar{
     width:32px;height:32px;border-radius:50%;
-    display:grid;place-items:center;
-    font-size:12px;font-weight:800;
-    flex-shrink:0;
+    display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0;
   }
   .pc-avatar.premium{background:rgba(255,215,0,.18);color:var(--gold)}
-  .pc-avatar.regular{background:rgba(79,157,255,.18);color:var(--vivek)}
+  .pc-avatar.regular{background:rgba(79,157,255,.18);color:#4f9dff}
   .pc-info{flex:1;min-width:0}
   .pc-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pc-sub{font-size:11px;color:var(--muted)}
-  .pc-status{
-    font-size:10px;font-weight:700;
-    padding:3px 8px;border-radius:20px;
-    background:rgba(34,211,166,.15);color:var(--green);
-    white-space:nowrap;
-  }
+  .pc-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;background:rgba(34,211,166,.15);color:var(--green)}
+  .pc-status.unsold-tag{background:rgba(245,158,11,.15);color:var(--amber)}
 
+  /* Bottom */
   .bottom-row{display:grid;grid-template-columns:1fr 320px;gap:18px}
-
   .history-section, .stats-section{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px;
+    background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:18px;
   }
-  .section-head{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:12px;
-  }
+  .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .section-head h3{font-size:14px;letter-spacing:.5px}
   .icon-btn{
     background:rgba(255,255,255,.05);border:1px solid var(--line);
@@ -564,222 +498,157 @@
   .icon-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
   .icon-btn.danger:hover{border-color:var(--red);color:var(--red)}
 
-  #bid-history{
-    list-style:none;display:flex;flex-direction:column;gap:6px;
-    max-height:220px;overflow-y:auto;padding-right:4px;
-  }
+  #bid-history{list-style:none;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px}
   #bid-history::-webkit-scrollbar{width:5px}
   #bid-history::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
-
   #bid-history li{
-    background:rgba(255,255,255,.03);
-    padding:8px 12px;border-radius:8px;
+    background:rgba(255,255,255,.03);padding:8px 12px;border-radius:8px;
     font-size:12.5px;display:flex;align-items:center;gap:9px;
-    animation:histIn .3s ease;
-    border-left:2px solid transparent;
+    animation:histIn .3s ease;border-left:2px solid transparent;
   }
   @keyframes histIn{from{opacity:0;transform:translateX(-10px)}}
-  #bid-history li.vivek{border-left-color:var(--vivek)}
-  #bid-history li.garvit{border-left-color:var(--garvit)}
   #bid-history li.sold{border-left-color:var(--green);background:rgba(34,211,166,.07)}
   #bid-history li.max{background:rgba(255,215,0,.08);border-left-color:var(--gold)}
-  #bid-history li.timeout{border-left-color:#f59e0b;background:rgba(245,158,11,.07)}
-  #bid-history .empty{
-    justify-content:center;color:var(--muted);
-    border-style:dashed;border-left:none!important;
-  }
+  #bid-history li.timeout{border-left-color:var(--amber);background:rgba(245,158,11,.07)}
+  #bid-history li.passed{border-left-color:#64748b;background:rgba(100,116,139,.08);color:var(--muted)}
+  #bid-history li.added{border-left-color:var(--purple);background:rgba(167,139,250,.08)}
+  #bid-history li.round{border-left-color:var(--purple);background:rgba(167,139,250,.12);font-weight:700;color:var(--purple)}
+  #bid-history li.removed{border-left-color:#ef4444;background:rgba(239,68,68,.08);color:#fca5a5}
+  #bid-history .empty{justify-content:center;color:var(--muted);border-style:dashed;border-left:none!important}
   .history-owner{font-weight:700;min-width:60px}
-  .history-owner.vivek{color:var(--vivek)}
-  .history-owner.garvit{color:var(--garvit)}
   .history-time{margin-left:auto;color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
 
-  .stat-row{
-    display:flex;justify-content:space-between;
-    padding:9px 0;font-size:13px;
-    border-bottom:1px solid rgba(255,255,255,.05);
-  }
+  .stat-row{display:flex;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
   .stat-row:last-child{border-bottom:none}
   .stat-row .lbl{color:var(--muted)}
   .stat-row .val{font-weight:700;color:var(--text)}
 
+  /* Toast */
   .toast{
     position:fixed;bottom:24px;left:50%;
     transform:translateX(-50%) translateY(80px);
     background:linear-gradient(135deg,var(--card),var(--card2));
-    border:1px solid var(--green);
-    padding:12px 22px;border-radius:12px;
-    font-size:14px;font-weight:600;
-    box-shadow:0 8px 24px rgba(0,0,0,.4);
+    border:1px solid var(--green);padding:12px 22px;border-radius:12px;
+    font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);
     z-index:1000;transition:.35s cubic-bezier(.4,0,.2,1);
-    display:flex;align-items:center;gap:10px;
-    pointer-events:none;
+    display:flex;align-items:center;gap:10px;pointer-events:none;
   }
   .toast.show{transform:translateX(-50%) translateY(0)}
   .toast.error{border-color:var(--red)}
   .toast.error .toast-icon{color:var(--red)}
+  .toast.info{border-color:var(--gold)}
+  .toast.info .toast-icon{color:var(--gold)}
+  .toast.round{border-color:var(--purple)}
+  .toast.round .toast-icon{color:var(--purple)}
   .toast-icon{font-size:18px;color:var(--green)}
 
   .modal-backdrop{
     position:fixed;inset:0;background:rgba(4,8,18,.85);
     display:none;align-items:center;justify-content:center;
-    z-index:2000;padding:20px;
-    backdrop-filter:blur(8px);
+    z-index:2000;padding:20px;backdrop-filter:blur(8px);
   }
   .modal-backdrop.show{display:flex;animation:fadeIn .3s}
   @keyframes fadeIn{from{opacity:0}}
   .modal{
     background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid var(--line);
-    border-radius:22px;padding:32px;max-width:520px;width:100%;
-    text-align:center;
+    border:1px solid var(--line);border-radius:22px;padding:32px;
+    max-width:560px;width:100%;text-align:center;
     animation:modalIn .5s cubic-bezier(.34,1.56,.64,1);
     position:relative;overflow:hidden;
+    max-height:90vh;overflow-y:auto;
   }
   @keyframes modalIn{from{opacity:0;transform:scale(.7) translateY(20px)}}
-  .modal::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:4px;
-    background:linear-gradient(90deg,var(--vivek),var(--purple),var(--garvit));
-  }
+  .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4f9dff,var(--purple),#ff8a4f)}
   .trophy{font-size:64px;margin-bottom:12px;animation:trophyPop 1s ease infinite alternate}
   @keyframes trophyPop{from{transform:scale(1)}to{transform:scale(1.1)}}
   .modal h2{
     font-size:28px;margin-bottom:6px;
     background:linear-gradient(90deg,var(--gold),#f59e0b);
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   }
   .modal .sub{color:var(--muted);font-size:14px;margin-bottom:22px}
-  .final-teams{
-    display:grid;grid-template-columns:1fr 1fr;gap:12px;
-    margin-bottom:22px;
-  }
-  .final-team{
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-    border-radius:12px;padding:14px;
-    text-align:left;
-  }
+  .final-teams{display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:12px;margin-bottom:22px}
+  .final-team{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;border-left:3px solid var(--owner-color,#4f9dff)}
   .final-team h4{font-size:14px;margin-bottom:6px}
-  .final-team.vivek h4{color:var(--vivek)}
-  .final-team.garvit h4{color:var(--garvit)}
   .final-team .count{font-size:11px;color:var(--muted);margin-bottom:8px}
   .final-team ul{list-style:none;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+  .unsold-final{
+    background:rgba(245,158,11,.06);border:1px dashed rgba(245,158,11,.3);
+    border-radius:12px;padding:12px;margin-bottom:20px;text-align:left;
+  }
+  .unsold-final h5{font-size:12px;color:var(--amber);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+  .unsold-final ul{list-style:none;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px}
+  .unsold-final li{background:rgba(245,158,11,.15);color:var(--amber);padding:3px 10px;border-radius:12px}
   .modal-close{
-    background:linear-gradient(135deg,#7c3aed,#4f9dff);
-    color:#fff;border:none;padding:12px 30px;
-    border-radius:12px;font-size:14px;font-weight:800;
-    cursor:pointer;transition:.2s;
-    box-shadow:0 6px 18px rgba(79,157,255,.35);
+    background:linear-gradient(135deg,#7c3aed,#4f9dff);color:#fff;border:none;
+    padding:12px 30px;border-radius:12px;font-size:14px;font-weight:800;
+    cursor:pointer;transition:.2s;box-shadow:0 6px 18px rgba(79,157,255,.35);
   }
   .modal-close:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(79,157,255,.5)}
 
-  .confetti{
-    position:fixed;width:10px;height:10px;
-    pointer-events:none;z-index:1500;
-    animation:confettiFall 3s linear forwards;
-  }
-  @keyframes confettiFall{
-    to{transform:translateY(100vh) rotate(720deg);opacity:0}
-  }
+  .confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:1500;animation:confettiFall 3s linear forwards}
+  @keyframes confettiFall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}
 
   .spin-overlay{
-    position:absolute;inset:0;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    z-index:10;text-align:center;
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;z-index:10;text-align:center;
   }
   .spin-emoji{font-size:80px;animation:spinEmoji .4s ease infinite alternate}
-  @keyframes spinEmoji{
-    from{transform:scale(1) rotate(-10deg)}
-    to{transform:scale(1.15) rotate(10deg)}
-  }
+  @keyframes spinEmoji{from{transform:scale(1) rotate(-10deg)}to{transform:scale(1.15) rotate(10deg)}}
   .spin-name{
-    font-size:34px;font-weight:900;color:var(--gold);
-    margin-top:20px;letter-spacing:1px;
-    text-shadow:0 0 40px rgba(255,215,0,.6);
-    min-height:44px;
+    font-size:34px;font-weight:900;color:var(--gold);margin-top:20px;
+    letter-spacing:1px;text-shadow:0 0 40px rgba(255,215,0,.6);min-height:44px;
   }
   .spin-hint{color:var(--muted);font-size:14px;margin-top:10px}
-
   .reveal-name{animation:revealPop .5s cubic-bezier(.34,1.56,.64,1)}
-  @keyframes revealPop{
-    from{opacity:0;transform:scale(.4) rotate(-8deg)}
-    to{opacity:1;transform:scale(1) rotate(0)}
-  }
+  @keyframes revealPop{from{opacity:0;transform:scale(.4) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0)}}
 
   .undo-btn{
-    background:rgba(255,255,255,.05);
-    border:1px solid var(--line);
-    color:var(--muted);
-    padding:6px 12px;border-radius:8px;
-    font-size:11px;font-weight:700;cursor:pointer;
-    transition:.2s;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--muted);padding:6px 12px;border-radius:8px;
+    font-size:11px;font-weight:700;cursor:pointer;transition:.2s;
   }
   .undo-btn:hover:not(:disabled){background:rgba(255,255,255,.1);color:var(--text)}
   .undo-btn:disabled{opacity:.3;cursor:not-allowed}
-
   .shake{animation:shake .4s}
-  @keyframes shake{
-    0%,100%{transform:translateX(0)}
-    25%{transform:translateX(-8px)}
-    75%{transform:translateX(8px)}
-  }
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 
   .auto-sold-overlay{
     position:absolute;inset:0;z-index:50;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:radial-gradient(circle at center, rgba(255,215,0,.15), rgba(10,14,26,.95));
-    backdrop-filter:blur(6px);
-    animation:autoSoldIn .4s ease;
+    backdrop-filter:blur(6px);animation:autoSoldIn .4s ease;
     text-align:center;padding:20px;
   }
   @keyframes autoSoldIn{from{opacity:0;transform:scale(.9)}}
-  .auto-sold-overlay.timeout{
-    background:radial-gradient(circle at center, rgba(255,92,122,.15), rgba(10,14,26,.95));
-  }
-  .auto-sold-overlay .sold-emoji{
-    font-size:80px;animation:soldBounce .6s ease infinite alternate;
-  }
-  @keyframes soldBounce{
-    from{transform:scale(1) rotate(-5deg)}
-    to{transform:scale(1.15) rotate(5deg)}
-  }
+  .auto-sold-overlay.timeout{background:radial-gradient(circle at center, rgba(245,158,11,.15), rgba(10,14,26,.95))}
+  .auto-sold-overlay.passed{background:radial-gradient(circle at center, rgba(100,116,139,.2), rgba(10,14,26,.95))}
+  .auto-sold-overlay .sold-emoji{font-size:80px;animation:soldBounce .6s ease infinite alternate}
+  @keyframes soldBounce{from{transform:scale(1) rotate(-5deg)}to{transform:scale(1.15) rotate(5deg)}}
   .auto-sold-overlay .sold-text{
     font-size:44px;font-weight:900;letter-spacing:4px;
     background:linear-gradient(135deg,#ffd700,#f59e0b,#ffd700);
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-size:200% auto;
-    animation:shine 1s linear infinite;
-    margin:10px 0;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    background-size:200% auto;animation:shine 1s linear infinite;margin:10px 0;
   }
   .auto-sold-overlay.timeout .sold-text{
-    background:linear-gradient(135deg,#ff5c7a,#dc2626,#ff5c7a);
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-size:200% auto;
+    background:linear-gradient(135deg,#f59e0b,#d97706,#f59e0b);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   }
-  .auto-sold-overlay .sold-player{
-    font-size:24px;font-weight:800;color:var(--text);
-    margin-bottom:6px;
+  .auto-sold-overlay.passed .sold-text{
+    font-size:36px;
+    background:linear-gradient(135deg,#94a3b8,#64748b,#94a3b8);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   }
-  .auto-sold-overlay .sold-owner{
-    font-size:16px;font-weight:700;
-    padding:8px 20px;border-radius:20px;
-    background:rgba(255,255,255,.08);
-    margin-top:10px;
-  }
-  .auto-sold-overlay .sold-price{
-    font-size:22px;font-weight:800;color:var(--gold);
-    margin-top:12px;
-  }
-  .auto-sold-overlay.timeout .sold-price{color:var(--red)}
+  .auto-sold-overlay .sold-player{font-size:24px;font-weight:800;color:var(--text);margin-bottom:6px}
+  .auto-sold-overlay .sold-owner{font-size:16px;font-weight:700;padding:8px 20px;border-radius:20px;background:rgba(255,255,255,.08);margin-top:10px}
+  .auto-sold-overlay .sold-price{font-size:22px;font-weight:800;color:var(--gold);margin-top:12px}
+  .auto-sold-overlay.timeout .sold-price{color:var(--amber)}
 
   @media (max-width:1024px){
     .grid{grid-template-columns:1fr 1fr;gap:16px}
-    .owners-panel{grid-column:1/-1;flex-direction:row}
-    .owner-card{flex:1;min-width:0}
+    .owners-panel{grid-column:1/-1;flex-direction:row;flex-wrap:wrap}
+    .owner-card{flex:1;min-width:220px}
     .bottom-row{grid-template-columns:1fr}
     .auction-arena{grid-column:1/-1}
   }
@@ -788,7 +657,7 @@
     header h1{font-size:19px}
     .grid{grid-template-columns:1fr;gap:14px}
     .owners-panel{flex-direction:column}
-    .bid-buttons{grid-template-columns:1fr}
+    .bid-buttons,.pass-buttons{grid-template-columns:1fr}
     .current-bid-box .amount{font-size:30px}
     .player-showcase h2{font-size:22px}
     .final-teams{grid-template-columns:1fr}
@@ -804,87 +673,59 @@
 <div class="app">
 
   <header>
-    <h1>🏆 Player Auction — Vivek vs Garvit</h1>
+    <h1>🏆 Player Auction — Dynamic</h1>
     <div class="stats-bar">
-      <div class="stat-chip">⏱️ Timer: <b>15s</b></div>
-      <div class="stat-chip">👥 Players: <b id="stat-players">7</b></div>
+      <div class="stat-chip round-chip">🔢 Round: <b id="stat-round">1</b></div>
+      <div class="stat-chip">👥 Owners: <b id="stat-owners">2</b></div>
+      <div class="stat-chip">⚽ Players: <b id="stat-players">7</b></div>
       <div class="stat-chip">✅ Sold: <b id="stat-sold">0</b></div>
-      <div class="stat-chip">🎯 Remaining: <b id="stat-left">7</b></div>
+      <div class="stat-chip unsold-chip">⏸️ Unsold: <b id="stat-unsold">0</b></div>
     </div>
   </header>
 
   <div class="setup-panel">
-    <div class="setup-label">
-      <span class="icon">⚙️</span> Token Setup
-    </div>
-    <div class="setup-group vivek">
-      <span class="name">Vivek</span>
-      <input type="number" id="setup-vivek" value="1500" min="100" step="50" />
-      <span class="coin">🪙</span>
-    </div>
-    <div class="setup-group garvit">
-      <span class="name">Garvit</span>
-      <input type="number" id="setup-garvit" value="1500" min="100" step="50" />
-      <span class="coin">🪙</span>
-    </div>
-    <button class="apply-btn" onclick="applyTokens()">✓ Apply & Reset</button>
-    <div class="setup-hint">
-      💡 Token values set karke <b>Apply & Reset</b> dabao — dono owners ke coins update ho jayenge. (Min: 100)
-    </div>
+    <div class="setup-label"><span class="icon">⚙️</span> Owners Setup</div>
+    <div id="setup-owners-container" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"></div>
+    <button class="add-owner-btn" onclick="addOwnerSetup()" id="addOwnerBtn">+ Add Owner</button>
+    <button class="apply-btn" onclick="applySetup()">✓ Apply & Reset</button>
+    <div class="setup-hint">💡 Owner names aur tokens edit karo, aur bhi owners add kar sakte ho (min 2). <b>Apply & Reset</b> dabao — full auction reset hoga.</div>
   </div>
 
   <div class="grid">
 
-    <div class="owners-panel">
-      <div class="owner-card" id="owner-vivek">
-        <div class="owner-head">
-          <div class="owner-avatar vivek">V</div>
-          <div class="owner-info">
-            <div class="owner-name" style="color:var(--vivek)">Vivek</div>
-            <div class="owner-tokens-sm" id="vivek-count">0 players</div>
-          </div>
-        </div>
-        <div class="token-display">
-          <div class="num" id="vivek-tokens">1500</div>
-          <div class="lbl">Tokens Left</div>
-        </div>
-        <div class="budget-bar">
-          <div class="budget-fill" id="vivek-bar" style="width:100%"></div>
-        </div>
-        <div class="owner-team" id="vivek-team">
-          <div class="team-empty">No players yet</div>
-        </div>
-      </div>
-
-      <div class="owner-card" id="owner-garvit">
-        <div class="owner-head">
-          <div class="owner-avatar garvit">G</div>
-          <div class="owner-info">
-            <div class="owner-name" style="color:var(--garvit)">Garvit</div>
-            <div class="owner-tokens-sm" id="garvit-count">0 players</div>
-          </div>
-        </div>
-        <div class="token-display">
-          <div class="num" id="garvit-tokens">1500</div>
-          <div class="lbl">Tokens Left</div>
-        </div>
-        <div class="budget-bar">
-          <div class="budget-fill" id="garvit-bar" style="width:100%"></div>
-        </div>
-        <div class="owner-team" id="garvit-team">
-          <div class="team-empty">No players yet</div>
-        </div>
-      </div>
-    </div>
+    <div class="owners-panel" id="owners-panel"></div>
 
     <div class="auction-arena">
+      <div class="round-indicator" id="round-indicator">
+        <span class="dot"></span>
+        <span id="round-label">Round 1</span>
+      </div>
       <div id="auction-content"></div>
     </div>
 
     <div class="players-list">
       <div class="list-header">
         <h3>📋 Player Pool</h3>
+        <div class="list-header-actions">
+          <button class="add-player-btn" onclick="toggleAddPlayerForm()">+ Add</button>
+        </div>
       </div>
+
+      <div class="add-player-form" id="addPlayerForm">
+        <input type="text" id="newPlayerName" placeholder="Player name (e.g. Rahul)" maxlength="20" />
+        <div class="form-row">
+          <select id="newPlayerCategory" onchange="updateNewPlayerBase()">
+            <option value="Premium">⭐ Premium</option>
+            <option value="Regular">🔹 Regular</option>
+          </select>
+          <input type="number" id="newPlayerBase" value="150" min="10" step="10" placeholder="Base price" />
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" onclick="addNewPlayer()">✓ Add Player</button>
+          <button class="btn-cancel-sm" onclick="toggleAddPlayerForm()">Cancel</button>
+        </div>
+      </div>
+
       <div class="list-tabs">
         <button class="tab-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
         <button class="tab-btn" data-filter="Premium" onclick="setFilter('Premium', this)">⭐ Premium</button>
@@ -903,9 +744,8 @@
       <ul id="bid-history"></ul>
     </div>
     <div class="stats-section">
-      <div class="section-head">
-        <h3>📊 Auction Stats</h3>
-      </div>
+      <div class="section-head"><h3>📊 Auction Stats</h3></div>
+      <div class="stat-row"><span class="lbl">Current Round</span><span class="val" id="stat-round2">1</span></div>
       <div class="stat-row"><span class="lbl">Highest Sale</span><span class="val" id="stat-highest">—</span></div>
       <div class="stat-row"><span class="lbl">Total Spent</span><span class="val" id="stat-spent">0</span></div>
       <div class="stat-row"><span class="lbl">Avg Sale Price</span><span class="val" id="stat-avg">—</span></div>
@@ -926,37 +766,65 @@
   <div class="modal">
     <div class="trophy">🏆</div>
     <h2>Auction Complete!</h2>
-    <p class="sub">Saare players sold ho gaye</p>
+    <p class="sub">Auction results</p>
     <div class="final-teams" id="final-teams"></div>
+    <div id="unsold-final-wrap"></div>
     <button class="modal-close" onclick="closeModal()">Great! 🎉</button>
   </div>
 </div>
 
 <script>
-// ========== CONFIG ==========
 const DEFAULT_TOKENS = 1500;
 const MAX_BID = 600;
 const INCREMENT = 50;
-const BID_TIMEOUT = 15; // seconds
+const BID_TIMEOUT = 15;
+const MIN_OWNERS = 2;
+const MAX_OWNERS = 6;
 
-// ========== STATE ==========
+// Color palette for owners (rotating)
+const OWNER_PALETTE = [
+  { color: '#4f9dff', light: '#7bb8ff' },  // blue
+  { color: '#ff8a4f', light: '#ffb37a' },  // orange
+  { color: '#22d3a6', light: '#5eead4' },  // green
+  { color: '#a78bfa', light: '#c4b5fd' },  // purple
+  { color: '#ffd700', light: '#fde68a' },  // gold
+  { color: '#ff5c7a', light: '#fda4af' }   // pink
+];
+
+let nextOwnerId = 3;
+let nextPlayerId = 8;
+
+function createOwner(name, tokens, paletteIdx){
+  const pal = OWNER_PALETTE[paletteIdx % OWNER_PALETTE.length];
+  return {
+    id: 'o' + (nextOwnerId++),
+    name,
+    tokens,
+    startTokens: tokens,
+    players: [],
+    totalSpent: 0,
+    color: pal.color,
+    light: pal.light
+  };
+}
+
 const state = {
-  owners: {
-    Vivek:  { tokens: DEFAULT_TOKENS, startTokens: DEFAULT_TOKENS, players: [], totalSpent: 0 },
-    Garvit: { tokens: DEFAULT_TOKENS, startTokens: DEFAULT_TOKENS, players: [], totalSpent: 0 }
-  },
+  owners: [
+    createOwner('Vivek', DEFAULT_TOKENS, 0),
+    createOwner('Garvit', DEFAULT_TOKENS, 1)
+  ],
   players: [
-    { id:1, name:'Jaibhai',   category:'Premium', base:150, sold:false, owner:null, price:0 },
-    { id:2, name:'Avinash',   category:'Premium', base:150, sold:false, owner:null, price:0 },
-    { id:3, name:'Delete',    category:'Premium', base:150, sold:false, owner:null, price:0 },
-    { id:4, name:'Soul',      category:'Premium', base:150, sold:false, owner:null, price:0 },
-    { id:5, name:'Bobby',     category:'Regular', base:50,  sold:false, owner:null, price:0 },
-    { id:6, name:'Vipin',     category:'Regular', base:50,  sold:false, owner:null, price:0 },
-    { id:7, name:'Shreyansh', category:'Regular', base:50,  sold:false, owner:null, price:0 }
+    { id:1, name:'Jaibhai',   category:'Premium', base:150, sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:2, name:'Avinash',   category:'Premium', base:150, sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:3, name:'Delete',    category:'Premium', base:150, sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:4, name:'Soul',      category:'Premium', base:150, sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:5, name:'Bobby',     category:'Regular', base:50,  sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:6, name:'Vipin',     category:'Regular', base:50,  sold:false, owner:null, price:0, unsold:false, unsoldRound:null },
+    { id:7, name:'Shreyansh', category:'Regular', base:50,  sold:false, owner:null, price:0, unsold:false, unsoldRound:null }
   ],
   currentPlayerId: null,
   currentBid: 0,
-  highestBidder: null,
+  highestBidder: null, // owner id
   bidHistory: [],
   bidCount: 0,
   autoSoldCount: 0,
@@ -965,75 +833,70 @@ const state = {
   filter: 'all',
   isSpinning: false,
   isAutoSelling: false,
-  // Timer
   timeLeft: BID_TIMEOUT,
-  timerInterval: null
+  timerInterval: null,
+  passed: {}, // {ownerId: bool}
+  currentRound: 1
 };
 
-// ========== HELPERS ==========
 const $ = id => document.getElementById(id);
 const initials = name => name.slice(0,2).toUpperCase();
 
-function getCurrentPlayer(){
-  return state.players.find(p => p.id === state.currentPlayerId);
-}
-function availablePlayers(){
-  return state.players.filter(p => !p.sold);
-}
+function getOwnerById(id){ return state.owners.find(o => o.id === id); }
+function getOwnerByName(name){ return state.owners.find(o => o.name === name); }
+function getCurrentPlayer(){ return state.players.find(p => p.id === state.currentPlayerId); }
+function availablePlayers(){ return state.players.filter(p => !p.sold && !p.unsold); }
+function unsoldPlayers(){ return state.players.filter(p => p.unsold && !p.sold); }
+function pendingPlayers(){ return state.players.filter(p => !p.sold && !p.unsold); }
 
-// ========== SOUND ==========
+// ===== AUDIO =====
 let audioCtx = null;
 function ensureAudio(){
-  if(!audioCtx){
-    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
-    catch(e){ audioCtx = null; }
-  }
+  if(!audioCtx){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx = null; } }
   if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 }
 function beep(freq=440, dur=0.08, type='sine', vol=0.05){
   if(!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  gain.gain.value = vol;
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start();
+  const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+  osc.type = type; osc.frequency.value = freq; gain.gain.value = vol;
+  osc.connect(gain); gain.connect(audioCtx.destination); osc.start();
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
   osc.stop(audioCtx.currentTime + dur);
 }
 const sound = {
-  bid:    () => { beep(660,0.08,'triangle',0.06); setTimeout(()=>beep(880,0.08,'triangle',0.05),60); },
-  sold:   () => { beep(523,0.12,'sine',0.08); setTimeout(()=>beep(659,0.12,'sine',0.08),110); setTimeout(()=>beep(784,0.25,'sine',0.09),230); },
-  error:  () => beep(180,0.18,'sawtooth',0.06),
-  spin:   () => beep(440+Math.random()*400,0.03,'square',0.03),
+  bid: () => { beep(660,0.08,'triangle',0.06); setTimeout(()=>beep(880,0.08,'triangle',0.05),60); },
+  sold: () => { beep(523,0.12,'sine',0.08); setTimeout(()=>beep(659,0.12,'sine',0.08),110); setTimeout(()=>beep(784,0.25,'sine',0.09),230); },
+  error: () => beep(180,0.18,'sawtooth',0.06),
+  spin: () => beep(440+Math.random()*400,0.03,'square',0.03),
   reveal: () => { beep(880,0.15,'sine',0.09); setTimeout(()=>beep(1175,0.25,'sine',0.09),130); },
-  win:    () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.3,'sine',0.09),i*140)); },
-  max:    () => { [660,880,1100,1320].forEach((f,i)=>setTimeout(()=>beep(f,0.15,'sine',0.1),i*90)); },
-  tick:   () => beep(880,0.05,'sine',0.04),
+  win: () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.3,'sine',0.09),i*140)); },
+  max: () => { [660,880,1100,1320].forEach((f,i)=>setTimeout(()=>beep(f,0.15,'sine',0.1),i*90)); },
+  tick: () => beep(880,0.05,'sine',0.04),
   tickUrgent: () => beep(1200,0.06,'square',0.06),
-  timeout: () => { [800,600,400,300].forEach((f,i)=>setTimeout(()=>beep(f,0.2,'sawtooth',0.08),i*120)); }
+  timeout: () => { [800,600,400,300].forEach((f,i)=>setTimeout(()=>beep(f,0.2,'sawtooth',0.08),i*120)); },
+  pass: () => { beep(500,0.1,'sine',0.05); setTimeout(()=>beep(350,0.15,'sine',0.05),80); },
+  add: () => { beep(660,0.08,'sine',0.06); setTimeout(()=>beep(990,0.12,'sine',0.07),80); },
+  remove: () => { beep(400,0.1,'sawtooth',0.05); setTimeout(()=>beep(250,0.15,'sawtooth',0.05),80); },
+  round: () => { [440,550,660,880].forEach((f,i)=>setTimeout(()=>beep(f,0.2,'sine',0.08),i*130)); }
 };
 
-// ========== TOAST ==========
+// ===== TOAST =====
 let toastTimer = null;
 function toast(msg, type='success'){
   const el = $('toast');
   $('toast-msg').textContent = msg;
-  $('toast-icon').textContent = type === 'error' ? '✕' : '✓';
-  el.className = 'toast show ' + (type==='error'?'error':'');
+  $('toast-icon').textContent = type === 'error' ? '✕' : type === 'info' ? 'ⓘ' : type === 'round' ? '🔄' : '✓';
+  el.className = 'toast show ' + (type==='error'?'error':type==='info'?'info':type==='round'?'round':'');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ el.classList.remove('show'); }, 2600);
+  toastTimer = setTimeout(()=>{ el.classList.remove('show'); }, 3000);
 }
 
-// ========== CONFETTI ==========
+// ===== CONFETTI =====
 function confetti(count=60){
   const colors = ['#4f9dff','#ff8a4f','#22d3a6','#ffd700','#a78bfa','#ff5c7a'];
   for(let i=0;i<count;i++){
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random()*100 + 'vw';
-    c.style.top = '-20px';
+    const c = document.createElement('div'); c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw'; c.style.top = '-20px';
     c.style.background = colors[Math.floor(Math.random()*colors.length)];
     c.style.animationDelay = Math.random()*0.5 + 's';
     c.style.animationDuration = (2 + Math.random()*1.5) + 's';
@@ -1045,166 +908,273 @@ function confetti(count=60){
   }
 }
 
-// ========== BID TIMER ==========
+// ===== TIMER =====
 function startBidTimer(){
   stopBidTimer();
   state.timeLeft = BID_TIMEOUT;
   updateTimerUI();
-
   state.timerInterval = setInterval(() => {
     state.timeLeft--;
     updateTimerUI();
-
-    // Sound ticks
-    if(state.timeLeft > 0 && state.timeLeft <= 5){
-      sound.tickUrgent();
-    } else if(state.timeLeft > 0 && state.timeLeft <= 10){
-      sound.tick();
-    }
-
-    if(state.timeLeft <= 0){
-      stopBidTimer();
-      handleTimeout();
-    }
+    if(state.timeLeft > 0 && state.timeLeft <= 5) sound.tickUrgent();
+    else if(state.timeLeft > 0 && state.timeLeft <= 10) sound.tick();
+    if(state.timeLeft <= 0){ stopBidTimer(); handleTimeout(); }
   }, 1000);
 }
-
-function stopBidTimer(){
-  if(state.timerInterval){
-    clearInterval(state.timerInterval);
-    state.timerInterval = null;
-  }
-}
-
+function stopBidTimer(){ if(state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; } }
 function updateTimerUI(){
-  const timerEl = $('bid-timer');
-  if(!timerEl) return;
-
-  const countEl = $('timer-count');
-  const subEl = $('timer-sub');
-  const progressEl = $('timer-progress');
-
-  if(countEl){
-    countEl.textContent = state.timeLeft;
-    countEl.classList.toggle('danger', state.timeLeft <= 5);
-  }
-
-  // Show who needs to bid
+  const countEl = $('timer-count'), subEl = $('timer-sub'), progressEl = $('timer-progress');
+  if(countEl){ countEl.textContent = state.timeLeft; countEl.classList.toggle('danger', state.timeLeft <= 5); }
   if(subEl && state.highestBidder){
-    const other = state.highestBidder === 'Vivek' ? 'Garvit' : 'Vivek';
-    subEl.innerHTML = `<b>${other}</b> needs to counter-bid!`;
+    const others = state.owners.filter(o => o.id !== state.highestBidder);
+    const activeOthers = others.filter(o => !state.passed[o.id]);
+    if(activeOthers.length === 0) subEl.innerHTML = `All others passed!`;
+    else if(activeOthers.length === 1) subEl.innerHTML = `<b>${activeOthers[0].name}</b> needs to counter-bid!`;
+    else subEl.innerHTML = `<b>${activeOthers.length}</b> owners can counter-bid`;
   }
-
-  if(progressEl){
-    progressEl.style.width = (state.timeLeft / BID_TIMEOUT * 100) + '%';
-  }
-
-  // Highlight the owner button who needs to bid
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('needs-bid'));
+  if(progressEl) progressEl.style.width = (state.timeLeft / BID_TIMEOUT * 100) + '%';
+  document.querySelectorAll('.btn.owner-bid-btn').forEach(b => b.classList.remove('needs-bid'));
   if(state.highestBidder && state.timeLeft > 0 && state.timeLeft <= 10){
-    const other = state.highestBidder === 'Vivek' ? 'garvit' : 'vivek';
-    const btn = document.querySelector(`.btn.${other}`);
-    if(btn && !btn.disabled) btn.classList.add('needs-bid');
+    const others = state.owners.filter(o => o.id !== state.highestBidder && !state.passed[o.id]);
+    others.forEach(o => {
+      const btn = document.querySelector(`.btn.owner-bid-btn[data-owner="${o.id}"]`);
+      if(btn && !btn.disabled) btn.classList.add('needs-bid');
+    });
   }
 }
-
 function handleTimeout(){
-  if(!state.highestBidder) return;
-  if(state.isAutoSelling) return;
-
-  const winner = state.highestBidder;
+  if(!state.highestBidder || state.isAutoSelling) return;
+  const winner = getOwnerById(state.highestBidder);
   const player = getCurrentPlayer();
-  if(!player) return;
-
-  // Show dramatic timeout overlay
+  if(!player || !winner) return;
   state.isAutoSelling = true;
-  sound.timeout();
-  confetti(60);
-
-  const c = $('auction-content');
-  c.innerHTML = `
+  sound.timeout(); confetti(60);
+  const finalPrice = state.currentBid;
+  $('auction-content').innerHTML = `
     <div class="auto-sold-overlay timeout">
       <div class="sold-emoji">⏰</div>
       <div class="sold-text">TIME OUT!</div>
       <div class="sold-player">${player.name}</div>
-      <div class="sold-owner" style="color:${winner==='Vivek'?'var(--vivek)':'var(--garvit)'}">
-        🏆 ${winner} wins!
-      </div>
-      <div class="sold-price">₹${state.currentBid}</div>
-    </div>
-  `;
-
-  // Save info before reset
-  const finalPrice = state.currentBid;
-  const finalPlayer = player;
-  const finalWinner = winner;
-
-  setTimeout(() => {
-    completeSale(finalWinner, finalPlayer, finalPrice, false, true);
-  }, 1800);
+      <div class="sold-owner" style="color:${winner.color}">🏆 ${winner.name} wins!</div>
+      <div class="sold-price">₹${finalPrice}</div>
+    </div>`;
+  setTimeout(() => completeSale(winner.id, player, finalPrice, false, true), 1800);
 }
 
-// ========== RENDER ==========
-function render(){
-  renderOwners();
-  renderPlayers();
-  renderAuction();
-  renderHistory();
-  renderStats();
+// ===== SETUP PANEL RENDER =====
+function renderSetupPanel(){
+  const container = $('setup-owners-container');
+  container.innerHTML = state.owners.map((o, idx) => `
+    <div class="setup-group" style="--owner-color:${o.color}">
+      <input type="text" class="name-input" data-owner="${o.id}" value="${o.name}" maxlength="12" />
+      <input type="number" class="tokens-input" data-owner="${o.id}" value="${o.tokens}" min="100" step="50" />
+      <span class="coin">🪙</span>
+      <button class="remove-owner-x" onclick="removeOwnerSetup('${o.id}')"
+        ${state.owners.length <= MIN_OWNERS ? 'disabled title="Minimum 2 owners chahiye"' : ''}
+        title="Remove owner">×</button>
+    </div>
+  `).join('');
+  $('addOwnerBtn').disabled = state.owners.length >= MAX_OWNERS;
+}
+
+function addOwnerSetup(){
+  if(state.owners.length >= MAX_OWNERS){ toast(`Max ${MAX_OWNERS} owners allowed`, 'error'); return; }
+  const newOwner = {
+    id: 'o' + (nextOwnerId++),
+    name: 'Owner ' + (state.owners.length + 1),
+    tokens: DEFAULT_TOKENS,
+    startTokens: DEFAULT_TOKENS,
+    players: [],
+    totalSpent: 0,
+    color: OWNER_PALETTE[state.owners.length % OWNER_PALETTE.length].color,
+    light: OWNER_PALETTE[state.owners.length % OWNER_PALETTE.length].light
+  };
+  state.owners.push(newOwner);
+  state.passed[newOwner.id] = false;
+  sound.add();
+  renderSetupPanel();
+  toast(`${newOwner.name} added to setup — click Apply`);
+}
+
+function removeOwnerSetup(ownerId){
+  if(state.owners.length <= MIN_OWNERS){ toast(`Minimum ${MIN_OWNERS} owners needed`, 'error'); return; }
+  const owner = getOwnerById(ownerId);
+  if(!owner) return;
+  if(owner.players.length > 0){
+    if(!confirm(`${owner.name} ke paas ${owner.players.length} player(s) hain. Remove karein?`)) return;
+  }
+  state.owners = state.owners.filter(o => o.id !== ownerId);
+  delete state.passed[ownerId];
+  sound.remove();
+  renderSetupPanel();
+  toast(`${owner.name} removed from setup`);
+}
+
+// ===== APPLY SETUP =====
+function applySetup(){
+  const nameInputs = document.querySelectorAll('.name-input');
+  const tokenInputs = document.querySelectorAll('.tokens-input');
+
+  // Validate
+  const names = [], tokensMap = {};
+  for(const inp of nameInputs){
+    const ownerId = inp.dataset.owner;
+    const name = inp.value.trim();
+    if(!name || name.length < 2){ toast('Owner name min 2 chars', 'error'); sound.error(); return; }
+    if(names.includes(name.toLowerCase())){ toast(`Duplicate name: ${name}`, 'error'); sound.error(); return; }
+    names.push(name.toLowerCase());
+    tokensMap[ownerId] = name;
+  }
+  for(const inp of tokenInputs){
+    const ownerId = inp.dataset.owner;
+    const val = parseInt(inp.value, 10);
+    if(!val || val < 100){ toast('Min 100 tokens per owner', 'error'); sound.error(); return; }
+    if(!tokensMap[ownerId]) tokensMap[ownerId] = null;
+    tokensMap[ownerId + '_tokens'] = val;
+  }
+
+  const hasProgress = state.players.some(p => p.sold) || state.bidHistory.length > 0;
+  if(hasProgress && !confirm('Auction reset ho jayega. Continue?')) return;
+
+  stopBidTimer();
+
+  // Apply new values
+  state.owners.forEach(o => {
+    const newName = tokensMap[o.id];
+    const newTokens = tokensMap[o.id + '_tokens'];
+    if(newName) o.name = newName;
+    if(newTokens){
+      o.tokens = newTokens;
+      o.startTokens = newTokens;
+    }
+    o.players = [];
+    o.totalSpent = 0;
+  });
+
+  // Reset auction state
+  state.players.forEach(p => { p.sold = false; p.owner = null; p.price = 0; p.unsold = false; p.unsoldRound = null; });
+  state.currentPlayerId = null; state.currentBid = 0; state.highestBidder = null;
+  state.bidHistory = []; state.bidCount = 0; state.autoSoldCount = 0; state.timeoutSoldCount = 0;
+  state.lastBidSnapshot = null; state.isAutoSelling = false; state.isSpinning = false;
+  state.timeLeft = BID_TIMEOUT;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
+  state.currentRound = 1;
+
+  render(); confetti(40);
+  toast(`✓ Setup applied! ${state.owners.length} owners ready`);
+}
+
+// ===== RENDER =====
+function render(){ renderOwners(); renderPlayers(); renderAuction(); renderHistory(); renderStats(); updateRoundUI(); }
+
+function updateRoundUI(){
+  $('stat-round').textContent = state.currentRound;
+  $('stat-round2').textContent = state.currentRound;
+  $('round-label').textContent = `Round ${state.currentRound}`;
+  $('stat-unsold').textContent = unsoldPlayers().length;
+  $('stat-owners').textContent = state.owners.length;
 }
 
 function renderOwners(){
-  ['Vivek','Garvit'].forEach(name=>{
-    const key = name.toLowerCase();
-    const owner = state.owners[name];
-    const el = $(key+'-tokens');
-    const old = parseInt(el.textContent) || 0;
-    el.textContent = owner.tokens;
-    if(old !== owner.tokens){
-      el.classList.remove('pulse');
-      void el.offsetWidth;
-      el.classList.add('pulse');
-    }
-    $(key+'-count').textContent = owner.players.length + ' player' + (owner.players.length===1?'':'s');
-
-    const pct = owner.startTokens > 0 ? (owner.tokens / owner.startTokens) * 100 : 0;
-    const bar = $(key+'-bar');
-    bar.style.width = pct + '%';
-    bar.className = 'budget-fill' + (pct < 25 ? ' low' : pct < 55 ? ' med' : '');
-
-    const team = $(key+'-team');
-    if(owner.players.length === 0){
-      team.innerHTML = '<div class="team-empty">No players yet</div>';
-    } else {
-      team.innerHTML = owner.players.map(p => `
-        <div class="team-chip">
-          <div class="mini-av">${initials(p.name)}</div>
-          <span>${p.name}</span>
-          <span class="price">${p.price}</span>
+  const panel = $('owners-panel');
+  panel.innerHTML = state.owners.map(o => {
+    const isWinning = state.highestBidder === o.id && !state.isSpinning && !state.isAutoSelling;
+    const isPassed = state.passed[o.id] && !!getCurrentPlayer() && !state.isAutoSelling;
+    const pct = o.startTokens > 0 ? (o.tokens / o.startTokens) * 100 : 0;
+    const barClass = pct < 25 ? 'low' : pct < 55 ? 'med' : '';
+    return `
+      <div class="owner-card ${isWinning?'winning':''} ${isPassed?'passed':''}"
+           id="owner-${o.id}" style="--owner-color:${o.color};--owner-light:${o.light}">
+        <button class="owner-remove-btn" onclick="removeOwnerRuntime('${o.id}')"
+          ${state.owners.length <= MIN_OWNERS ? 'disabled' : ''}
+          title="Remove owner">×</button>
+        <div class="owner-head">
+          <div class="owner-avatar" style="background:linear-gradient(135deg,${o.color},${o.light})">${initials(o.name)}</div>
+          <div class="owner-info">
+            <div class="owner-name" style="color:${o.color}">${o.name}</div>
+            <div class="owner-tokens-sm">${o.players.length} player${o.players.length===1?'':'s'}</div>
+          </div>
         </div>
-      `).join('');
-    }
+        <div class="token-display">
+          <div class="num" id="${o.id}-tokens">${o.tokens}</div>
+          <div class="lbl">Tokens Left</div>
+        </div>
+        <div class="budget-bar"><div class="budget-fill ${barClass}" style="width:${pct}%"></div></div>
+        <div class="owner-team">
+          ${o.players.length === 0
+            ? '<div class="team-empty">No players yet</div>'
+            : o.players.map(p => `
+              <div class="team-chip">
+                <div class="mini-av">${initials(p.name)}</div>
+                <span>${p.name}</span>
+                <span class="price">₹${p.price}</span>
+              </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
 
-    const card = $('owner-'+key);
-    card.classList.toggle('winning', state.highestBidder === name && !state.isSpinning && !state.isAutoSelling);
+  // Animate token numbers that changed
+  state.owners.forEach(o => {
+    const el = $(`${o.id}-tokens`);
+    if(el){
+      el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+    }
   });
+}
+
+function removeOwnerRuntime(ownerId){
+  if(state.owners.length <= MIN_OWNERS){ toast(`Minimum ${MIN_OWNERS} owners needed`, 'error'); return; }
+  if(state.isAutoSelling || state.isSpinning){ toast('Auction chal raha hai — wait', 'error'); return; }
+  const owner = getOwnerById(ownerId);
+  if(!owner) return;
+  if(state.currentPlayerId && state.highestBidder === ownerId){
+    toast('This owner is currently highest bidder!', 'error'); return;
+  }
+  let msg = `${owner.name} ko remove karein?`;
+  if(owner.players.length > 0) msg = `${owner.name} ke paas ${owner.players.length} player(s) hain. Remove karein?`;
+  if(!confirm(msg)) return;
+
+  // Refund their spent tokens? No — just remove
+  state.owners = state.owners.filter(o => o.id !== ownerId);
+  delete state.passed[ownerId];
+
+  // Clear highest bidder if it was them
+  if(state.highestBidder === ownerId){
+    state.highestBidder = null;
+    state.currentBid = getCurrentPlayer()?.base || 0;
+  }
+  state.lastBidSnapshot = null;
+
+  sound.remove();
+  toast(`${owner.name} removed`);
+  renderSetupPanel();
+  render();
 }
 
 function renderPlayers(){
   const grid = $('player-grid');
   let list = state.players;
   if(state.filter !== 'all') list = list.filter(p => p.category === state.filter);
-
   if(list.length === 0){
-    grid.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No players</div>';
+    grid.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No players — add one above</div>';
     return;
   }
-
   grid.innerHTML = list.map(p => {
-    const cls = `player-card ${p.sold ? 'sold' : 'available'} ${p.category.toLowerCase()}`;
-    const sub = p.sold ? `${p.owner} · ₹${p.price}` : `Base ₹${p.base}`;
-    const status = p.sold ? `<span class="pc-status">SOLD</span>`
-                          : `<span style="color:var(--muted);font-size:11px">₹${p.base}</span>`;
+    const cls = `player-card ${p.sold ? 'sold' : p.unsold ? 'unsold' : 'available'} ${p.category.toLowerCase()}`;
+    let sub, status;
+    if(p.sold){
+      const o = getOwnerById(p.owner);
+      sub = `${o ? o.name : '?'} · ₹${p.price}`;
+      status = `<span class="pc-status">SOLD</span>`;
+    } else if(p.unsold){
+      sub = `Unsold in R${p.unsoldRound || state.currentRound} · Base ₹${p.base}`;
+      status = `<span class="pc-status unsold-tag">UNSOLD</span>`;
+    } else {
+      sub = `Base ₹${p.base}`;
+      status = `<span style="color:var(--muted);font-size:11px">₹${p.base}</span>`;
+    }
+    const canRemove = !p.sold;
     return `
       <div class="${cls}" data-id="${p.id}" id="pc-${p.id}">
         <div class="pc-avatar ${p.category.toLowerCase()}">${initials(p.name)}</div>
@@ -1213,13 +1183,32 @@ function renderPlayers(){
           <div class="pc-sub">${sub}</div>
         </div>
         ${status}
-      </div>
-    `;
+        ${canRemove ? `<button class="remove-player-btn" onclick="event.stopPropagation(); removePlayer(${p.id})" title="Remove player">×</button>` : ''}
+      </div>`;
   }).join('');
-
-  grid.querySelectorAll('.player-card.available').forEach(card => {
-    card.addEventListener('click', () => startAuction(parseInt(card.dataset.id)));
+  grid.querySelectorAll('.player-card.available, .player-card.unsold').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.remove-player-btn')) return;
+      startAuction(parseInt(card.dataset.id));
+    });
   });
+}
+
+function removePlayer(playerId){
+  const player = state.players.find(p => p.id === playerId);
+  if(!player || player.sold) return;
+  if(state.isAutoSelling || state.isSpinning){ toast('Auction chal raha hai — wait', 'error'); return; }
+  if(state.currentPlayerId === playerId){ toast('This player is under auction!', 'error'); return; }
+  if(!confirm(`Remove "${player.name}" from pool?`)) return;
+
+  state.players = state.players.filter(p => p.id !== playerId);
+  state.bidHistory.push({
+    type: 'removed', player: player.name,
+    time: new Date().toLocaleTimeString('en-IN',{hour12:false})
+  });
+  sound.remove();
+  toast(`${player.name} removed from pool`);
+  render();
 }
 
 function setFilter(filter, btn){
@@ -1231,64 +1220,108 @@ function setFilter(filter, btn){
 
 function renderAuction(){
   if(state.isAutoSelling) return;
-
   const c = $('auction-content');
   const player = getCurrentPlayer();
 
   if(!player){
     const avail = availablePlayers().length;
+    const unsoldList = unsoldPlayers();
+
+    if(avail === 0 && unsoldList.length > 0){
+      c.innerHTML = `
+        <div class="round-complete-view">
+          <div class="round-complete-badge">Round ${state.currentRound} Complete</div>
+          <div class="round-complete-icon">✅</div>
+          <div class="round-complete-title">Round ${state.currentRound} Done!</div>
+          <div class="round-complete-sub"><b>${unsoldList.length}</b> player${unsoldList.length===1?'':'s'} unsold</div>
+          <div class="unsold-preview">
+            ${unsoldList.map(p => `<span class="unsold-chip-sm">${p.name}</span>`).join('')}
+          </div>
+          <button class="next-round-btn" onclick="startNextRound()">🔄 Start Round ${state.currentRound + 1}</button>
+          <div><button class="finalize-btn" onclick="finalizeAuction()">🏁 Finalize Auction & See Winner</button></div>
+        </div>`;
+      return;
+    }
+
+    if(avail === 0 && unsoldList.length === 0){
+      c.innerHTML = `
+        <div class="round-complete-view">
+          <div class="round-complete-icon">🎉</div>
+          <div class="round-complete-title">All Players Sold!</div>
+          <div class="round-complete-sub">Auction complete ho gaya</div>
+          <button class="next-round-btn" onclick="showWinnerModal()">🏆 See Final Results</button>
+        </div>`;
+      return;
+    }
+
     c.innerHTML = `
       <div class="no-player">
         <div class="dice-icon">🎲</div>
         <div style="font-size:15px;margin-bottom:4px">Ready to auction?</div>
         <div style="font-size:12px;color:var(--muted)">Pick randomly or select from list →</div>
-        <div>
-          <button class="random-pick-btn" onclick="pickRandomPlayer()" ${avail===0?'disabled':''}>
-            🎲 Random Player
-          </button>
-        </div>
+        <div><button class="random-pick-btn" onclick="pickRandomPlayer()" ${avail===0?'disabled':''}>🎲 Random Player</button></div>
         <div style="margin-top:14px;font-size:12px;color:var(--muted)">
-          ${avail} player${avail===1?'':'s'} remaining
+          ${avail} available${unsoldList.length ? ` · ${unsoldList.length} unsold (next round)` : ''}
         </div>
-      </div>
-    `;
+      </div>`;
     return;
   }
 
   if(player.sold){
-    c.innerHTML = `<div class="no-player">Player ${player.name} is already sold to ${player.owner}</div>`;
+    c.innerHTML = `<div class="no-player">Player ${player.name} is already sold</div>`;
     return;
   }
 
-  const canV = canBid('Vivek', player);
-  const canG = canBid('Garvit', player);
   const nextBid = state.highestBidder ? state.currentBid + INCREMENT : player.base;
   const atMax = state.currentBid >= MAX_BID;
   const disabled = state.isSpinning;
-
-  // Determine other bidder
-  const otherBidder = state.highestBidder
-    ? (state.highestBidder === 'Vivek' ? 'Garvit' : 'Vivek')
-    : null;
-
-  // Timer visibility — only show when there's a highest bidder (someone needs to counter)
   const showTimer = state.highestBidder && !atMax;
+  const highestOwner = state.highestBidder ? getOwnerById(state.highestBidder) : null;
+
+  // Determine who needs to bid for the timer sub-text
+  let timerSubText = '';
+  if(showTimer && highestOwner){
+    const others = state.owners.filter(o => o.id !== highestOwner.id);
+    const activeOthers = others.filter(o => !state.passed[o.id]);
+    if(activeOthers.length === 0) timerSubText = `All others passed!`;
+    else if(activeOthers.length === 1) timerSubText = `<b>${activeOthers[0].name}</b> needs to counter-bid!`;
+    else timerSubText = `<b>${activeOthers.length}</b> owners can counter-bid`;
+  }
+
+  // Dynamic bid buttons
+  const bidButtonsHTML = state.owners.map(o => {
+    const can = canBid(o.id, player);
+    const otherBids = state.highestBidder && state.highestBidder !== o.id && state.timeLeft <= 10 && state.timeLeft > 0 && !state.passed[o.id];
+    return `<button class="btn owner-bid-btn ${otherBids?'needs-bid':''}"
+      data-owner="${o.id}"
+      style="background:linear-gradient(135deg,${o.color},${o.light});box-shadow:0 4px 14px ${o.color}55"
+      onclick="placeBid('${o.id}')" ${(!can||disabled||atMax)?'disabled':''}>
+      ${o.name} · ₹${nextBid}
+    </button>`;
+  }).join('');
+
+  const passButtonsHTML = state.owners.map(o => `
+    <button class="btn-pass ${state.passed[o.id]?'passed':''}"
+      style="${state.passed[o.id] ? `border-color:${o.color};color:${o.color}` : ''}"
+      onclick="passOwner('${o.id}')" ${(state.passed[o.id]||disabled||state.isAutoSelling)?'disabled':''}>
+      ${state.passed[o.id] ? `✓ ${o.name} Passed` : `⏸️ ${o.name} Pass`}
+    </button>`).join('');
+
+  // Grid columns based on owner count
+  const cols = state.owners.length <= 2 ? 2 : (state.owners.length <= 4 ? 2 : 3);
 
   c.innerHTML = `
     <div class="player-showcase">
       <div class="player-avatar-lg ${player.category.toLowerCase()}">${initials(player.name)}</div>
       <h2>${player.name}</h2>
       <span class="badge ${player.category.toLowerCase()}">${player.category}</span>
-      <div class="base-line">Base Price: ₹${player.base}</div>
+      <div class="base-line">Base Price: ₹${player.base} · Round ${state.currentRound}</div>
     </div>
 
-    <!-- ⏱️ BID TIMER -->
     <div class="bid-timer ${showTimer?'show':''}" id="bid-timer">
       <div class="timer-label">⏱ Counter-Bid Timer</div>
       <div class="timer-count" id="timer-count">${state.timeLeft}</div>
-      <div class="timer-sub" id="timer-sub">
-        ${otherBidder ? `<b>${otherBidder}</b> needs to counter-bid!` : ''}
-      </div>
+      <div class="timer-sub" id="timer-sub">${timerSubText}</div>
       <div class="timer-progress" id="timer-progress" style="width:${(state.timeLeft/BID_TIMEOUT*100)}%"></div>
     </div>
 
@@ -1296,55 +1329,71 @@ function renderAuction(){
       <div class="label">Current Bid</div>
       <div class="amount" id="bid-amt">₹${state.currentBid || player.base}</div>
       <div class="leader ${state.highestBidder?'highlight':''}">
-        ${state.highestBidder ? '👑 ' + state.highestBidder : 'No bids yet'}
+        ${highestOwner ? `👑 ${highestOwner.name}` : 'No bids yet'}
       </div>
       ${atMax ? '<div class="max-tag">⚡ MAX BID REACHED</div>' : ''}
     </div>
-    <div class="bid-buttons">
-      <button class="btn vivek ${state.highestBidder==='Garvit' && state.timeLeft<=10 && state.timeLeft>0 ? 'needs-bid' : ''}" onclick="placeBid('Vivek')" ${(!canV||disabled||atMax)?'disabled':''}>
-        Vivek · ₹${nextBid}
-      </button>
-      <button class="btn garvit ${state.highestBidder==='Vivek' && state.timeLeft<=10 && state.timeLeft>0 ? 'needs-bid' : ''}" onclick="placeBid('Garvit')" ${(!canG||disabled||atMax)?'disabled':''}>
-        Garvit · ₹${nextBid}
-      </button>
+
+    <div class="bid-buttons" style="grid-template-columns:repeat(${cols},1fr)">
+      ${bidButtonsHTML}
     </div>
+
+    <div class="pass-buttons" style="grid-template-columns:repeat(${cols},1fr)">
+      ${passButtonsHTML}
+    </div>
+
     <div class="auction-actions">
       <button class="btn-sold" onclick="sellPlayer()" ${(!state.highestBidder||disabled)?'disabled':''}>🔨 SOLD NOW</button>
       <button class="btn-cancel" onclick="cancelAuction()" ${disabled?'disabled':''}>Cancel</button>
     </div>
     <div style="text-align:center;margin-top:10px">
       <button class="undo-btn" onclick="undoLastBid()" ${(!state.lastBidSnapshot||disabled)?'disabled':''}>↶ Undo Last Bid</button>
-    </div>
-  `;
-
+    </div>`;
   updateTimerUI();
 }
 
-function canBid(ownerName, player){
+function canBid(ownerId, player){
   if(player.sold) return false;
-  const owner = state.owners[ownerName];
+  if(state.passed[ownerId]) return false;
+  const owner = getOwnerById(ownerId);
+  if(!owner) return false;
   const bidAmount = state.highestBidder ? state.currentBid + INCREMENT : player.base;
   if(bidAmount > MAX_BID) return false;
   if(owner.tokens < bidAmount) return false;
-  if(state.highestBidder === ownerName) return false;
+  if(state.highestBidder === ownerId) return false;
   return true;
 }
 
 function renderHistory(){
   const list = $('bid-history');
-  if(!state.bidHistory.length){
-    list.innerHTML = '<li class="empty">No bids yet — start the auction!</li>';
-    return;
-  }
+  if(!state.bidHistory.length){ list.innerHTML = '<li class="empty">No bids yet — start the auction!</li>'; return; }
   list.innerHTML = state.bidHistory.slice().reverse().map(h => {
     if(h.type === 'sold'){
       const cls = h.auto ? 'sold max' : (h.timeout ? 'sold timeout' : 'sold');
       const icon = h.auto ? '⚡' : (h.timeout ? '⏰' : '🔨');
-      const tag = h.auto ? '<b style="color:var(--gold);font-size:11px">MAX</b>' : (h.timeout ? '<b style="color:#f59e0b;font-size:11px">TIMEOUT</b>' : '');
-      return `<li class="${cls}">${icon} <b>${h.player}</b> sold to <span class="history-owner ${h.owner.toLowerCase()}">${h.owner}</span> for <b>₹${h.amount}</b> ${tag} <span class="history-time">${h.time}</span></li>`;
+      const tag = h.auto ? '<b style="color:var(--gold);font-size:11px">MAX</b>' : (h.timeout ? '<b style="color:var(--amber);font-size:11px">TIMEOUT</b>' : '');
+      const o = getOwnerById(h.owner);
+      const ownerName = o ? o.name : '?';
+      const ownerColor = o ? o.color : 'var(--text)';
+      return `<li class="${cls}">${icon} <b>${h.player}</b> sold to <span class="history-owner" style="color:${ownerColor}">${ownerName}</span> for <b>₹${h.amount}</b> ${tag} <span class="history-time">${h.time}</span></li>`;
     }
-    return `<li class="${h.owner.toLowerCase()}">
-      <span class="history-owner ${h.owner.toLowerCase()}">${h.owner}</span>
+    if(h.type === 'passed'){
+      return `<li class="passed">⏸️ <b>${h.player}</b> — all owners passed (unsold R${h.round || state.currentRound}) <span class="history-time">${h.time}</span></li>`;
+    }
+    if(h.type === 'added'){
+      return `<li class="added">➕ New player added: <b>${h.player}</b> (${h.category} · ₹${h.base}) <span class="history-time">${h.time}</span></li>`;
+    }
+    if(h.type === 'removed'){
+      return `<li class="removed">✕ Player removed: <b>${h.player}</b> <span class="history-time">${h.time}</span></li>`;
+    }
+    if(h.type === 'round'){
+      return `<li class="round">🔄 <b>Round ${h.round} Started</b> — ${h.players} unsold player${h.players===1?'':'s'} retrying <span class="history-time">${h.time}</span></li>`;
+    }
+    const o = getOwnerById(h.owner);
+    const ownerName = o ? o.name : '?';
+    const ownerColor = o ? o.color : 'var(--text)';
+    return `<li style="border-left-color:${ownerColor}">
+      <span class="history-owner" style="color:${ownerColor}">${ownerName}</span>
       bid <b>₹${h.amount}</b> for ${h.player}
       <span class="history-time">${h.time}</span>
     </li>`;
@@ -1355,93 +1404,168 @@ function renderStats(){
   const sold = state.players.filter(p => p.sold);
   $('stat-players').textContent = state.players.length;
   $('stat-sold').textContent = sold.length;
-  $('stat-left').textContent = state.players.length - sold.length;
-
+  $('stat-owners').textContent = state.owners.length;
   if(sold.length){
-    const prices = sold.map(p => p.price);
-    const max = Math.max(...prices);
-    const total = prices.reduce((a,b)=>a+b,0);
+    const prices = sold.map(p => p.price), max = Math.max(...prices), total = prices.reduce((a,b)=>a+b,0);
     $('stat-highest').textContent = '₹' + max.toLocaleString('en-IN');
     $('stat-spent').textContent = '₹' + total.toLocaleString('en-IN');
     $('stat-avg').textContent = '₹' + Math.round(total/sold.length).toLocaleString('en-IN');
   } else {
-    $('stat-highest').textContent = '—';
-    $('stat-spent').textContent = '₹0';
-    $('stat-avg').textContent = '—';
+    $('stat-highest').textContent = '—'; $('stat-spent').textContent = '₹0'; $('stat-avg').textContent = '—';
   }
   $('stat-bids').textContent = state.bidCount;
   $('stat-autosold').textContent = state.autoSoldCount;
   $('stat-timeout').textContent = state.timeoutSoldCount;
-  $('stat-status').textContent = sold.length === state.players.length ? 'Complete 🎉' : (state.highestBidder ? 'Bidding' : 'Live');
+  const allDone = state.players.length > 0 && state.players.every(p => p.sold);
+  const roundDone = pendingPlayers().length === 0 && unsoldPlayers().length > 0;
+  $('stat-status').textContent = allDone ? 'Complete 🎉' : roundDone ? `Round ${state.currentRound} Done` : (state.highestBidder ? 'Bidding' : 'Live');
 }
 
 function clearHistory(){
   if(!state.bidHistory.length) return;
-  if(!confirm('Clear bid history? (Auctions not affected)')) return;
-  state.bidHistory = [];
-  renderHistory();
-  toast('History cleared');
+  if(!confirm('Clear bid history?')) return;
+  state.bidHistory = []; renderHistory(); toast('History cleared');
 }
 
-// ========== TOKEN SETUP ==========
-function applyTokens(){
-  const vVal = parseInt($('setup-vivek').value, 10);
-  const gVal = parseInt($('setup-garvit').value, 10);
+// ===== ROUNDS =====
+function startNextRound(){
+  const unsoldList = unsoldPlayers();
+  if(unsoldList.length === 0){ toast('No unsold players', 'error'); return; }
+  state.currentRound++;
+  unsoldList.forEach(p => { p.unsold = false; p.unsoldRound = null; });
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
+  state.currentPlayerId = null; state.currentBid = 0; state.highestBidder = null;
+  state.lastBidSnapshot = null; state.timeLeft = BID_TIMEOUT;
+  state.bidHistory.push({
+    type: 'round', round: state.currentRound, players: unsoldList.length,
+    time: new Date().toLocaleTimeString('en-IN',{hour12:false})
+  });
+  sound.round(); confetti(60);
+  toast(`🔄 Round ${state.currentRound} started! ${unsoldList.length} player(s) retrying`, 'round');
+  render();
+}
 
-  if(!vVal || vVal < 100 || !gVal || gVal < 100){
-    toast('Minimum 100 tokens needed for each owner!', 'error');
-    sound.error();
+function finalizeAuction(){
+  if(!confirm('Auction finalize karein? Unsold players unsold rahenge.')) return;
+  showWinnerModal();
+}
+
+// ===== ADD PLAYER =====
+function toggleAddPlayerForm(){
+  const form = $('addPlayerForm');
+  const isOpen = form.classList.toggle('show');
+  if(isOpen){
+    $('newPlayerName').value = '';
+    $('newPlayerCategory').value = 'Premium';
+    $('newPlayerBase').value = 150;
+    setTimeout(() => $('newPlayerName').focus(), 100);
+  }
+}
+function updateNewPlayerBase(){
+  $('newPlayerBase').value = $('newPlayerCategory').value === 'Premium' ? 150 : 50;
+}
+function addNewPlayer(){
+  const name = $('newPlayerName').value.trim();
+  const category = $('newPlayerCategory').value;
+  const base = parseInt($('newPlayerBase').value, 10);
+
+  if(!name || name.length < 2){ toast('Enter a valid name (min 2 chars)', 'error'); sound.error(); return; }
+  if(!base || base < 10){ toast('Base price min ₹10', 'error'); sound.error(); return; }
+  if(state.players.some(p => p.name.toLowerCase() === name.toLowerCase())){ toast('Player already exists!', 'error'); sound.error(); return; }
+
+  const newId = Math.max(0, ...state.players.map(p => p.id)) + 1;
+  state.players.push({ id: newId, name, category, base, sold: false, owner: null, price: 0, unsold: false, unsoldRound: null });
+  state.bidHistory.push({
+    type: 'added', player: name, category, base: base,
+    time: new Date().toLocaleTimeString('en-IN',{hour12:false})
+  });
+  sound.add();
+  toast(`✓ ${name} added to pool!`);
+  toggleAddPlayerForm();
+  render();
+}
+
+// ===== PASS =====
+function passOwner(ownerId){
+  ensureAudio();
+  if(state.isAutoSelling || state.isSpinning) return;
+  const player = getCurrentPlayer();
+  if(!player || player.sold){ toast('Pick a player first', 'error'); sound.error(); return; }
+  if(state.passed[ownerId]) return;
+
+  state.passed[ownerId] = true;
+  sound.pass();
+  const owner = getOwnerById(ownerId);
+
+  // Check if all owners passed
+  const allPassed = state.owners.every(o => state.passed[o.id]);
+  if(allPassed){ handleAllPassed(); return; }
+
+  // If only 2 owners and the other is highest bidder → sell to them
+  const activeOwners = state.owners.filter(o => !state.passed[o.id]);
+  if(activeOwners.length === 1 && state.highestBidder === activeOwners[0].id){
+    stopBidTimer();
+    toast(`${owner.name} passed! ${activeOwners[0].name} wins.`);
+    setTimeout(() => completeSale(activeOwners[0].id, player, state.currentBid, false, false), 900);
     return;
   }
 
-  const hasProgress = state.players.some(p => p.sold) || state.bidHistory.length > 0;
-  if(hasProgress){
-    if(!confirm('Auction reset ho jayega aur naye tokens set ho jayenge. Continue?')) return;
+  if(!state.highestBidder){
+    toast(`${owner.name} passed.`, 'info');
   }
-
-  stopBidTimer();
-
-  state.owners.Vivek.tokens  = vVal;
-  state.owners.Vivek.startTokens = vVal;
-  state.owners.Vivek.players = [];
-  state.owners.Vivek.totalSpent = 0;
-
-  state.owners.Garvit.tokens = gVal;
-  state.owners.Garvit.startTokens = gVal;
-  state.owners.Garvit.players = [];
-  state.owners.Garvit.totalSpent = 0;
-
-  state.players.forEach(p => { p.sold = false; p.owner = null; p.price = 0; });
-  state.currentPlayerId = null;
-  state.currentBid = 0;
-  state.highestBidder = null;
-  state.bidHistory = [];
-  state.bidCount = 0;
-  state.autoSoldCount = 0;
-  state.timeoutSoldCount = 0;
-  state.lastBidSnapshot = null;
-  state.isAutoSelling = false;
-  state.isSpinning = false;
-  state.timeLeft = BID_TIMEOUT;
-
   render();
-  confetti(40);
-  toast(`Tokens set! Vivek: ₹${vVal.toLocaleString('en-IN')} · Garvit: ₹${gVal.toLocaleString('en-IN')}`);
 }
 
-// ========== RANDOM PICKER ==========
+function handleAllPassed(){
+  const player = getCurrentPlayer();
+  if(!player) return;
+  stopBidTimer();
+  state.isAutoSelling = true;
+  sound.pass();
+
+  $('auction-content').innerHTML = `
+    <div class="auto-sold-overlay passed">
+      <div class="sold-emoji">⏸️</div>
+      <div class="sold-text">ALL PASSED</div>
+      <div class="sold-player">${player.name}</div>
+      <div style="color:var(--muted);font-size:14px;margin-top:10px">Player moves to next round</div>
+    </div>`;
+
+  state.bidHistory.push({
+    type: 'passed', player: player.name, round: state.currentRound,
+    time: new Date().toLocaleTimeString('en-IN',{hour12:false})
+  });
+
+  setTimeout(() => {
+    player.unsold = true;
+    player.unsoldRound = state.currentRound;
+    state.isAutoSelling = false;
+    state.currentPlayerId = null; state.currentBid = 0;
+    state.highestBidder = null; state.lastBidSnapshot = null;
+    state.passed = {};
+    state.owners.forEach(o => state.passed[o.id] = false);
+    state.timeLeft = BID_TIMEOUT;
+    render();
+    toast(`${player.name} unsold — Round ${state.currentRound + 1} mein retry`, 'info');
+  }, 1800);
+}
+
+// ===== RANDOM PICKER =====
 function pickRandomPlayer(){
   ensureAudio();
   const avail = availablePlayers();
-  if(!avail.length){ toast('All players sold!', 'error'); return; }
-  if(state.isSpinning || state.isAutoSelling) return;
-
-  if(state.currentPlayerId && state.highestBidder){
-    if(!confirm('Ongoing auction cancel karein?')) return;
+  if(!avail.length){
+    if(unsoldPlayers().length > 0){ toast('Round complete! Start next round.', 'info'); return; }
+    toast('All players sold!', 'error'); return;
   }
+  if(state.isSpinning || state.isAutoSelling) return;
+  if(state.currentPlayerId && state.highestBidder && !confirm('Ongoing auction cancel karein?')) return;
 
   stopBidTimer();
   state.isSpinning = true;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
   renderOwners();
 
   const c = $('auction-content');
@@ -1450,262 +1574,161 @@ function pickRandomPlayer(){
       <div class="spin-emoji" id="spin-emoji">🎲</div>
       <div class="spin-name" id="spin-name">...</div>
       <div class="spin-hint">Shuffling players...</div>
-    </div>
-  `;
+    </div>`;
 
-  const emojiEl = $('spin-emoji');
-  const nameEl = $('spin-name');
-  const allNames = state.players.map(p => p.name);
+  const emojiEl = $('spin-emoji'), nameEl = $('spin-name');
+  const allNames = avail.map(p => p.name);
   const emojis = ['🎲','🎯','🎰','🏆','⭐','💫'];
-  let tick = 0;
-  const totalTicks = 22;
+  let tick = 0; const totalTicks = 22;
 
   const interval = setInterval(() => {
     tick++;
     const rn = allNames[Math.floor(Math.random()*allNames.length)];
-    nameEl.textContent = rn;
-    emojiEl.textContent = emojis[tick % emojis.length];
+    nameEl.textContent = rn; emojiEl.textContent = emojis[tick % emojis.length];
     sound.spin();
-
     document.querySelectorAll('.player-card').forEach(x => x.classList.remove('highlight'));
     const rp = state.players.find(p => p.name === rn);
-    if(rp){
-      const card = $('pc-'+rp.id);
-      if(card && !rp.sold) card.classList.add('highlight');
-    }
-
-    if(tick >= totalTicks){
-      clearInterval(interval);
-      finalizeRandomPick(avail);
-    }
+    if(rp){ const card = $('pc-'+rp.id); if(card && !rp.sold && !rp.unsold) card.classList.add('highlight'); }
+    if(tick >= totalTicks){ clearInterval(interval); finalizeRandomPick(avail); }
   }, 80);
 }
 
 function finalizeRandomPick(avail){
   const chosen = avail[Math.floor(Math.random()*avail.length)];
-  const c = $('auction-content');
-
   document.querySelectorAll('.player-card').forEach(x => x.classList.remove('highlight'));
   const card = $('pc-'+chosen.id);
-  if(card){
-    card.classList.add('highlight');
-    card.scrollIntoView({behavior:'smooth', block:'center'});
-  }
-
-  c.innerHTML = `
+  if(card){ card.classList.add('highlight'); card.scrollIntoView({behavior:'smooth', block:'center'}); }
+  $('auction-content').innerHTML = `
     <div class="spin-overlay">
       <div class="spin-emoji">🏆</div>
       <div class="spin-name reveal-name" style="color:var(--gold)">${chosen.name}</div>
       <div style="margin-top:12px;font-size:14px;color:var(--muted)">
-        <span class="badge ${chosen.category.toLowerCase()}">${chosen.category}</span>
-        &nbsp;Base: ₹${chosen.base}
+        <span class="badge ${chosen.category.toLowerCase()}">${chosen.category}</span>&nbsp;Base: ₹${chosen.base}
       </div>
-    </div>
-  `;
-
-  sound.reveal();
-  confetti(30);
-
+    </div>`;
+  sound.reveal(); confetti(30);
   setTimeout(() => {
     state.isSpinning = false;
     state.currentPlayerId = chosen.id;
     state.currentBid = chosen.base;
-    state.highestBidder = null;
-    state.lastBidSnapshot = null;
+    state.highestBidder = null; state.lastBidSnapshot = null;
     state.timeLeft = BID_TIMEOUT;
+    state.passed = {};
+    state.owners.forEach(o => state.passed[o.id] = false);
     render();
-    setTimeout(() => {
-      const c2 = $('pc-'+chosen.id);
-      if(c2) c2.classList.remove('highlight');
-    }, 1400);
+    setTimeout(() => { const c2 = $('pc-'+chosen.id); if(c2) c2.classList.remove('highlight'); }, 1400);
   }, 1100);
 }
 
-// ========== ACTIONS ==========
+// ===== ACTIONS =====
 function startAuction(playerId){
   ensureAudio();
   if(state.isAutoSelling) return;
   const player = state.players.find(p => p.id === playerId);
   if(!player || player.sold) return;
-
-  if(state.currentPlayerId && state.highestBidder){
-    if(!confirm('Ongoing auction cancel and start new?')) return;
-  }
-
+  if(state.currentPlayerId && state.highestBidder && !confirm('Ongoing auction cancel and start new?')) return;
   stopBidTimer();
-
+  if(player.unsold) player.unsold = false;
   state.currentPlayerId = playerId;
   state.currentBid = player.base;
-  state.highestBidder = null;
-  state.lastBidSnapshot = null;
+  state.highestBidder = null; state.lastBidSnapshot = null;
   state.timeLeft = BID_TIMEOUT;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
   render();
 }
 
-function placeBid(ownerName){
+function placeBid(ownerId){
   ensureAudio();
   if(state.isAutoSelling) return;
+  if(state.passed[ownerId]){ toast('This owner has passed!', 'error'); sound.error(); return; }
   const player = getCurrentPlayer();
   if(!player) return;
+  const owner = getOwnerById(ownerId);
+  if(!owner) return;
 
   const bidAmount = state.highestBidder ? state.currentBid + INCREMENT : player.base;
-
-  if(bidAmount > MAX_BID){
-    toast(`Max bid is ₹${MAX_BID}!`, 'error');
-    sound.error();
-    $('bid-box')?.classList.add('shake');
-    setTimeout(()=>$('bid-box')?.classList.remove('shake'), 400);
-    return;
-  }
-  if(state.owners[ownerName].tokens < bidAmount){
-    toast('Not enough tokens!', 'error');
-    sound.error();
-    return;
-  }
-  if(state.highestBidder === ownerName){
-    toast('Already highest bidder!', 'error');
-    sound.error();
-    return;
-  }
+  if(bidAmount > MAX_BID){ toast(`Max bid ₹${MAX_BID}!`, 'error'); sound.error(); $('bid-box')?.classList.add('shake'); setTimeout(()=>$('bid-box')?.classList.remove('shake'), 400); return; }
+  if(owner.tokens < bidAmount){ toast(`${owner.name} has not enough tokens!`, 'error'); sound.error(); return; }
+  if(state.highestBidder === ownerId){ toast('Already highest bidder!', 'error'); sound.error(); return; }
 
   state.lastBidSnapshot = {
-    currentBid: state.currentBid,
-    highestBidder: state.highestBidder,
-    historyLen: state.bidHistory.length,
-    bidCount: state.bidCount
+    currentBid: state.currentBid, highestBidder: state.highestBidder,
+    historyLen: state.bidHistory.length, bidCount: state.bidCount,
+    passed: { ...state.passed }
   };
 
-  state.currentBid = bidAmount;
-  state.highestBidder = ownerName;
-  state.bidCount++;
+  state.currentBid = bidAmount; state.highestBidder = ownerId; state.bidCount++;
   state.bidHistory.push({
-    owner: ownerName,
-    player: player.name,
-    amount: bidAmount,
+    owner: ownerId, player: player.name, amount: bidAmount,
     time: new Date().toLocaleTimeString('en-IN',{hour12:false})
   });
 
-  sound.bid();
-  render();
-
+  sound.bid(); render();
   const box = $('bid-box');
   if(box){ box.classList.add('flash'); setTimeout(()=>box.classList.remove('flash'), 600); }
 
-  // ⚡ AUTO-SELL when max bid reached
-  if(bidAmount >= MAX_BID){
-    stopBidTimer();
-    setTimeout(() => autoSellAtMax(ownerName, player), 700);
-    return;
-  }
-
-  // ⏱️ START/ RESET counter-bid timer
+  if(bidAmount >= MAX_BID){ stopBidTimer(); setTimeout(() => autoSellAtMax(ownerId, player), 700); return; }
   startBidTimer();
 }
 
-// ========== AUTO-SELL AT MAX BID ==========
-function autoSellAtMax(ownerName, player){
-  state.isAutoSelling = true;
-
-  sound.max();
-  confetti(120);
-
-  const c = $('auction-content');
-  c.innerHTML = `
+function autoSellAtMax(ownerId, player){
+  state.isAutoSelling = true; sound.max(); confetti(120);
+  const owner = getOwnerById(ownerId);
+  $('auction-content').innerHTML = `
     <div class="auto-sold-overlay">
       <div class="sold-emoji">⚡</div>
       <div class="sold-text">MAX BID!</div>
       <div class="sold-player">${player.name}</div>
-      <div class="sold-owner" style="color:${ownerName==='Vivek'?'var(--vivek)':'var(--garvit)'}">
-        🏆 ${ownerName} wins!
-      </div>
+      <div class="sold-owner" style="color:${owner.color}">🏆 ${owner.name} wins!</div>
       <div class="sold-price">₹${MAX_BID}</div>
-    </div>
-  `;
-
-  setTimeout(() => {
-    completeSale(ownerName, player, MAX_BID, true, false);
-  }, 1800);
+    </div>`;
+  setTimeout(() => completeSale(ownerId, player, MAX_BID, true, false), 1800);
 }
 
-function completeSale(ownerName, player, price, isAuto, isTimeout){
-  const owner = state.owners[ownerName];
-
-  if(owner.tokens < price){
-    toast('Not enough tokens — sale failed', 'error');
-    state.isAutoSelling = false;
-    render();
-    return;
-  }
-
+function completeSale(ownerId, player, price, isAuto, isTimeout){
+  const owner = getOwnerById(ownerId);
+  if(!owner){ toast('Owner not found!', 'error'); state.isAutoSelling = false; render(); return; }
+  if(owner.tokens < price){ toast('Not enough tokens', 'error'); state.isAutoSelling = false; render(); return; }
   stopBidTimer();
-
-  owner.tokens -= price;
-  owner.totalSpent += price;
+  owner.tokens -= price; owner.totalSpent += price;
   owner.players.push({ name: player.name, price: price });
-  player.sold = true;
-  player.owner = ownerName;
-  player.price = price;
-
+  player.sold = true; player.owner = ownerId; player.price = price; player.unsold = false; player.unsoldRound = null;
   state.bidHistory.push({
-    type: 'sold',
-    owner: ownerName,
-    player: player.name,
-    amount: price,
+    type: 'sold', owner: ownerId, player: player.name, amount: price,
     time: new Date().toLocaleTimeString('en-IN',{hour12:false}),
-    auto: isAuto || false,
-    timeout: isTimeout || false
+    auto: isAuto || false, timeout: isTimeout || false
   });
-
   if(isAuto) state.autoSoldCount++;
   if(isTimeout) state.timeoutSoldCount++;
-
-  sound.sold();
-  confetti(100);
-
-  state.currentPlayerId = null;
-  state.currentBid = 0;
-  state.highestBidder = null;
-  state.lastBidSnapshot = null;
-  state.isAutoSelling = false;
-  state.timeLeft = BID_TIMEOUT;
-
-  let msg = `🔨 ${player.name} SOLD to ${ownerName} for ₹${price}!`;
-  if(isAuto) msg = `⚡ MAX BID! ${player.name} auto-sold to ${ownerName} for ₹${price}!`;
-  if(isTimeout) msg = `⏰ TIMEOUT! ${player.name} sold to ${ownerName} for ₹${price}!`;
+  sound.sold(); confetti(100);
+  state.currentPlayerId = null; state.currentBid = 0; state.highestBidder = null;
+  state.lastBidSnapshot = null; state.isAutoSelling = false; state.timeLeft = BID_TIMEOUT;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
+  let msg = `🔨 ${player.name} SOLD to ${owner.name} for ₹${price}!`;
+  if(isAuto) msg = `⚡ MAX BID! ${player.name} → ${owner.name}!`;
+  if(isTimeout) msg = `⏰ TIMEOUT! ${player.name} → ${owner.name}!`;
   toast(msg);
-
   render();
-
-  if(availablePlayers().length === 0){
-    setTimeout(() => {
-      sound.win();
-      confetti(150);
-      showWinnerModal();
-    }, 900);
+  const allSold = state.players.every(p => p.sold);
+  if(allSold){
+    setTimeout(() => { sound.win(); confetti(150); showWinnerModal(); }, 900);
   }
 }
 
 function undoLastBid(){
   if(state.isAutoSelling) return;
   if(!state.lastBidSnapshot){ toast('Nothing to undo', 'error'); return; }
-
   stopBidTimer();
   const s = state.lastBidSnapshot;
-
   state.bidHistory = state.bidHistory.slice(0, s.historyLen);
-  state.currentBid = s.currentBid;
-  state.highestBidder = s.highestBidder;
-  state.bidCount = s.bidCount;
-  state.lastBidSnapshot = null;
+  state.currentBid = s.currentBid; state.highestBidder = s.highestBidder;
+  state.bidCount = s.bidCount; state.lastBidSnapshot = null;
   state.timeLeft = BID_TIMEOUT;
-
-  // Restart timer if there's still a highest bidder (undo from 2nd bid back to 1st)
-  if(state.highestBidder && state.currentBid < MAX_BID){
-    startBidTimer();
-  }
-
-  toast('Last bid undone');
-  render();
+  if(s.passed) state.passed = { ...s.passed };
+  if(state.highestBidder && state.currentBid < MAX_BID) startBidTimer();
+  toast('Last bid undone'); render();
 }
 
 function sellPlayer(){
@@ -1714,98 +1737,95 @@ function sellPlayer(){
   const player = getCurrentPlayer();
   if(!player || player.sold) return;
   if(!state.highestBidder){ toast('No bids to sell', 'error'); return; }
-
   stopBidTimer();
   completeSale(state.highestBidder, player, state.currentBid, false, false);
 }
 
 function cancelAuction(){
   if(state.isAutoSelling) return;
-  if(state.highestBidder){
-    if(!confirm('Cancel ongoing auction? Bids discarded.')) return;
-  }
+  if(state.highestBidder && !confirm('Cancel ongoing auction?')) return;
   stopBidTimer();
-  state.currentPlayerId = null;
-  state.currentBid = 0;
-  state.highestBidder = null;
-  state.lastBidSnapshot = null;
-  state.timeLeft = BID_TIMEOUT;
+  state.currentPlayerId = null; state.currentBid = 0; state.highestBidder = null;
+  state.lastBidSnapshot = null; state.timeLeft = BID_TIMEOUT;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
   render();
 }
 
-// ========== WINNER MODAL ==========
 function showWinnerModal(){
   const sold = state.players.filter(p => p.sold);
-  const teams = { Vivek: [], Garvit: [] };
-  sold.forEach(p => teams[p.owner].push(p));
+  const unsoldList = unsoldPlayers();
 
-  const teamHTML = (name, key) => `
-    <div class="final-team ${key}">
-      <h4>${name}</h4>
-      <div class="count">${teams[name].length} players · ₹${state.owners[name].totalSpent.toLocaleString('en-IN')} spent · ₹${state.owners[name].tokens.toLocaleString('en-IN')} left</div>
-      <ul>
-        ${teams[name].map(p => `<li>• ${p.name} — ₹${p.price}</li>`).join('') || '<li>No players</li>'}
-      </ul>
-    </div>
-  `;
+  const teamsHTML = state.owners.map(o => {
+    const teamPlayers = sold.filter(p => p.owner === o.id);
+    return `
+      <div class="final-team" style="--owner-color:${o.color};border-left-color:${o.color}">
+        <h4 style="color:${o.color}">${o.name}</h4>
+        <div class="count">${teamPlayers.length} players · ₹${o.totalSpent.toLocaleString('en-IN')} spent · ₹${o.tokens.toLocaleString('en-IN')} left</div>
+        <ul>${teamPlayers.map(p => `<li>• ${p.name} — ₹${p.price}</li>`).join('') || '<li>No players</li>'}</ul>
+      </div>`;
+  }).join('');
 
-  $('final-teams').innerHTML = teamHTML('Vivek', 'vivek') + teamHTML('Garvit', 'garvit');
+  $('final-teams').innerHTML = teamsHTML;
+
+  const wrap = $('unsold-final-wrap');
+  if(unsoldList.length > 0){
+    wrap.innerHTML = `
+      <div class="unsold-final">
+        <h5>⏸️ Unsold Players (${unsoldList.length})</h5>
+        <ul>${unsoldList.map(p => `<li>${p.name}</li>`).join('')}</ul>
+      </div>`;
+  } else {
+    wrap.innerHTML = '';
+  }
+
   $('modal').classList.add('show');
 }
-
-function closeModal(){
-  $('modal').classList.remove('show');
-}
+function closeModal(){ $('modal').classList.remove('show'); }
 
 function resetAuction(){
   if(!confirm('Reset entire auction? All sales will be lost.')) return;
   stopBidTimer();
-  const vVal = state.owners.Vivek.startTokens;
-  const gVal = state.owners.Garvit.startTokens;
-
-  state.owners = {
-    Vivek:  { tokens: vVal, startTokens: vVal, players: [], totalSpent: 0 },
-    Garvit: { tokens: gVal, startTokens: gVal, players: [], totalSpent: 0 }
-  };
-  state.players.forEach(p => { p.sold = false; p.owner = null; p.price = 0; });
-  state.currentPlayerId = null;
-  state.currentBid = 0;
-  state.highestBidder = null;
-  state.bidHistory = [];
-  state.bidCount = 0;
-  state.autoSoldCount = 0;
-  state.timeoutSoldCount = 0;
-  state.lastBidSnapshot = null;
-  state.isAutoSelling = false;
-  state.timeLeft = BID_TIMEOUT;
-  render();
-  toast('Auction reset!');
+  state.owners.forEach(o => {
+    o.tokens = o.startTokens;
+    o.players = [];
+    o.totalSpent = 0;
+  });
+  state.players.forEach(p => { p.sold = false; p.owner = null; p.price = 0; p.unsold = false; p.unsoldRound = null; });
+  state.currentPlayerId = null; state.currentBid = 0; state.highestBidder = null;
+  state.bidHistory = []; state.bidCount = 0; state.autoSoldCount = 0; state.timeoutSoldCount = 0;
+  state.lastBidSnapshot = null; state.isAutoSelling = false; state.timeLeft = BID_TIMEOUT;
+  state.passed = {};
+  state.owners.forEach(o => state.passed[o.id] = false);
+  state.currentRound = 1;
+  render(); toast('Auction reset!');
 }
 
-// ========== KEYBOARD ==========
+// ===== KEYBOARD =====
 document.addEventListener('keydown', e => {
-  if(e.target.tagName === 'INPUT') return;
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
   if(state.isAutoSelling) return;
   if(e.key === ' '){ e.preventDefault(); pickRandomPlayer(); }
-  if(e.key === '1') placeBid('Vivek');
-  if(e.key === '2') placeBid('Garvit');
+  // Number keys bid for respective owners
+  const num = parseInt(e.key, 10);
+  if(num >= 1 && num <= state.owners.length){
+    placeBid(state.owners[num-1].id);
+  }
+  if(e.key === 'p' || e.key === 'P'){ if(state.owners[0]) passOwner(state.owners[0].id); }
+  if(e.key === 'o' || e.key === 'O'){ if(state.owners[1]) passOwner(state.owners[1].id); }
   if(e.key === 's' || e.key === 'S') sellPlayer();
+  if(e.key === 'n' || e.key === 'N'){ if(unsoldPlayers().length) startNextRound(); }
   if(e.key === 'r' || e.key === 'R'){ if(confirm('Reset auction?')) resetAuction(); }
   if(e.key === 'Escape') closeModal();
 });
 
-// ========== INIT ==========
+// ===== INIT =====
 ensureAudio();
+state.owners.forEach(o => state.passed[o.id] = false);
+renderSetupPanel();
 render();
-document.addEventListener('dblclick', e => {
-  if(e.target.tagName === 'H1') resetAuction();
-});
-
-['setup-vivek','setup-garvit'].forEach(id => {
-  $(id).addEventListener('keydown', e => {
-    if(e.key === 'Enter') applyTokens();
-  });
-});
+document.addEventListener('dblclick', e => { if(e.target.tagName === 'H1') resetAuction(); });
+$('newPlayerName').addEventListener('keydown', e => { if(e.key === 'Enter') addNewPlayer(); });
 </script>
 </body>
 </html>
